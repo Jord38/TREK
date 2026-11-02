@@ -17,9 +17,12 @@ Runs trek.jord.cloud. Upstream: https://github.com/liketrek/TREK
     git switch jord && git merge vX.Y.Z
     # run the client and shared tests, then push; the workflow builds the image
 
-Then set the new tag in /opt/trek/docker-compose.yml on VM 105.
+Then set the new tag in the instance's docker-compose.yml.
 
 ## Our changes
 
 - Atlas: "Show place names" switch (desktop and mobile), off by default,
   remembered per browser.
+- Welcome: new users get a pop-up with the intro video on their first login.
+  The video is not in git or the image: the instance mounts a folder at
+  `/app/server/public/media` (read-only) holding `trek-intro.mp4`.

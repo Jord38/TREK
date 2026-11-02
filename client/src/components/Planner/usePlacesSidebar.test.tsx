@@ -526,7 +526,8 @@ describe('usePlacesSidebar list import', () => {
 
   it('FE-PLANNER-PSHOOK-034: an empty URL does not start an import', async () => {
     let calls = 0;
-    server.use(http.post('/api/trips/1/places/import/google-list', () => {
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', () => {
       calls++;
       return HttpResponse.json({ count: 0, skipped: 0, places: [] });
     }));
@@ -543,7 +544,8 @@ describe('usePlacesSidebar list import', () => {
     seedStore(useTripStore, { loadTrip });
     let sentUrl: string | undefined;
     let sentEnrich: boolean | undefined;
-    server.use(http.post('/api/trips/1/places/import/google-list', async ({ request }) => {
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', async ({ request }) => {
       const body = await request.json() as { url: string; enrich?: boolean };
       sentUrl = body.url;
       sentEnrich = body.enrich;
@@ -567,7 +569,8 @@ describe('usePlacesSidebar list import', () => {
   it('FE-PLANNER-PSHOOK-036: the undo entry bulk-deletes the imported places', async () => {
     const loadTrip = vi.fn().mockResolvedValue(undefined);
     seedStore(useTripStore, { loadTrip });
-    server.use(http.post('/api/trips/1/places/import/google-list', () =>
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', () =>
       HttpResponse.json({ count: 2, skipped: 0, listName: 'Tokyo', places: [{ id: 20 }, { id: 21 }] })));
     let deletedIds: number[] = [];
     server.use(http.post('/api/trips/1/places/bulk-delete', async ({ request }) => {
@@ -589,7 +592,8 @@ describe('usePlacesSidebar list import', () => {
 
   it('FE-PLANNER-PSHOOK-037: an import that skips everything warns instead of celebrating', async () => {
     seedStore(useTripStore, { loadTrip: vi.fn().mockResolvedValue(undefined) });
-    server.use(http.post('/api/trips/1/places/import/google-list', () =>
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', () =>
       HttpResponse.json({ count: 0, skipped: 4, listName: 'Tokyo', places: [] })));
 
     render(<Host {...makeProps()} />);
@@ -626,7 +630,8 @@ describe('usePlacesSidebar list import', () => {
   it('FE-PLANNER-PSHOOK-039: enrichment stays off while the instance has no maps key', async () => {
     seedStore(useTripStore, { loadTrip: vi.fn().mockResolvedValue(undefined) });
     let sentEnrich: boolean | undefined;
-    server.use(http.post('/api/trips/1/places/import/google-list', async ({ request }) => {
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', async ({ request }) => {
       sentEnrich = ((await request.json()) as { enrich?: boolean }).enrich;
       return HttpResponse.json({ count: 1, skipped: 0, listName: 'Tokyo', places: [] });
     }));
@@ -640,7 +645,8 @@ describe('usePlacesSidebar list import', () => {
   });
 
   it('FE-PLANNER-PSHOOK-040: a failing import surfaces the server message', async () => {
-    server.use(http.post('/api/trips/1/places/import/google-list', () =>
+    server.use(http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
+      http.post('/api/trips/1/places/import/google-list', () =>
       HttpResponse.json({ error: 'List is private' }, { status: 400 })));
 
     render(<Host {...makeProps()} />);

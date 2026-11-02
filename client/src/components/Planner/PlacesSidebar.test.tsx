@@ -777,6 +777,7 @@ describe('Google Maps list import', () => {
 
   it('FE-PLANNER-SIDEBAR-042: successful Google list import shows success toast and closes dialog', async () => {
     server.use(
+      http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
       http.post('/api/trips/1/places/import/google-list', () =>
         HttpResponse.json({ count: 3, listName: 'My List', places: [{ id: 20 }, { id: 21 }, { id: 22 }] })
       ),
@@ -806,6 +807,7 @@ describe('Google Maps list import', () => {
 
   it('FE-PLANNER-SIDEBAR-043: pressing Enter in URL field triggers import', async () => {
     server.use(
+      http.post('/api/trips/1/places/import/google-list/preview', () => HttpResponse.json({ kind: 'directions' })),
       http.post('/api/trips/1/places/import/google-list', () =>
         HttpResponse.json({ count: 1, listName: 'Test', places: [{ id: 30 }] })
       ),

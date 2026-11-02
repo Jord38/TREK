@@ -58,11 +58,16 @@ whole history. A page left open during the deploy offers a reload first.
 ## Decided
 
 - Entry shape: `{ id: string, date: 'YYYY-MM-DD', title: string, items: { kind: 'added' | 'changed' | 'fixed', text: string }[] }`; ids unique and stable (a date plus a slug).
-- Who sees an entry in the dialog: users whose account existed before the
-  entry's date. Logins do not matter: a remembered session lasts up to 30 days,
+- Who sees an entry in the dialog: users whose account existed before the entry
+  went live, i.e. before the first time the server ran with that entry. The
+  server records that moment per entry id on its first start with it (in TREK's
+  key-value app settings, so no migration), and compares it with the account's
+  creation time. Logins do not matter: a remembered session lasts up to 30 days,
   so someone who logged in once and kept using TREK still gets every later entry.
-  Entries dated before the user's account was created never show in the dialog
-  (they are on the page).
+  Someone who signs up the same day but before the deploy gets it too (Jord's
+  call); someone who signs up after the deploy does not (the feature was already
+  there). Entries from before an account existed are on the page, not in the
+  dialog.
 - Several missed entries: all of them, newest first, in one dialog (Jord's
   answer). Whether that is one notice with the entries stacked or one notice per
   entry paged through TREK's existing multi-notice modal is the builder's call,
@@ -75,10 +80,8 @@ whole history. A page left open during the deploy offers a reload first.
 
 ## Settled after the builder check (my calls)
 
-- **Dates are whole UTC days.** An entry's `date` is the day it is deployed. A
-  user sees it in the dialog when their account was created on an earlier UTC
-  day; a same-day signup does not (they joined after or around the deploy and
-  get the welcome video). The condition context gains the user's `created_at`.
+- **Timestamps, not days.** An entry's `date` is only shown on the page. Who
+  gets it in the dialog is decided by the entry's live-since time (see Decided).
 - **"Seen" uses TREK's existing dismissals.** The notice registry gains one
   notice per changelog entry, generated from the JSON when the module loads
   (id `fork-changelog:<entry id>`), so `dismiss()` accepts them and nothing new

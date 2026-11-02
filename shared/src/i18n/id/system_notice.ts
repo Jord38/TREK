@@ -91,5 +91,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Baru di TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Lihat semua perubahan',
+  'system_notice.welcome_tour.title': 'Selamat datang di TREK',
+  'system_notice.welcome_tour.body':
+    'Tur dua menit tentang apa yang bisa dilakukan TREK: penerbangan dan kereta dalam satu linimasa, pendakian di peta topografi, buku foto, pembagian biaya, dan perencanaan dengan AI Anda.',
+  'system_notice.welcome_tour.video_label': 'Tur TREK',
+  'system_notice.welcome_tour.cta': 'Rencanakan perjalanan pertama Anda',
 };
 export default system_notice;

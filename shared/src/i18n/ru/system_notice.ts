@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Новое в TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Посмотреть все изменения',
+  'system_notice.welcome_tour.title': 'Добро пожаловать в TREK',
+  'system_notice.welcome_tour.body':
+    'Двухминутный обзор возможностей TREK: перелёты и поезда на одной временной шкале, походы на топографической карте, фотокниги, разделение расходов и планирование с вашим ИИ.',
+  'system_notice.welcome_tour.video_label': 'Обзор TREK',
+  'system_notice.welcome_tour.cta': 'Спланируйте первую поездку',
 };
 export default system_notice;

@@ -93,5 +93,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Νέο στο TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Δείτε όλες τις αλλαγές',
+  'system_notice.welcome_tour.title': 'Καλώς ήρθατε στο TREK',
+  'system_notice.welcome_tour.body':
+    'Μια περιήγηση δύο λεπτών σε όσα μπορεί να κάνει το TREK: πτήσεις και τρένα σε ένα χρονολόγιο, πεζοπορίες σε τοπογραφικό χάρτη, φωτοβιβλία, μοιρασμένα έξοδα και σχεδιασμός με την τεχνητή νοημοσύνη σας.',
+  'system_notice.welcome_tour.video_label': 'Μια περιήγηση στο TREK',
+  'system_notice.welcome_tour.cta': 'Σχεδιάστε το πρώτο σας ταξίδι',
 };
 export default system_notice;

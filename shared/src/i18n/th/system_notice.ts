@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'ใหม่ใน TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'ดูการเปลี่ยนแปลงทั้งหมด',
+  'system_notice.welcome_tour.title': 'ยินดีต้อนรับสู่ TREK',
+  'system_notice.welcome_tour.body':
+    'ทัวร์สองนาทีว่า TREK ทำอะไรได้บ้าง: เที่ยวบินและรถไฟในไทม์ไลน์เดียว เส้นทางเดินป่าบนแผนที่ภูมิประเทศ สมุดภาพ การแบ่งค่าใช้จ่าย และการวางแผนกับ AI ของคุณ',
+  'system_notice.welcome_tour.video_label': 'ทัวร์ TREK',
+  'system_notice.welcome_tour.cta': 'วางแผนทริปแรกของคุณ',
 };
 export default system_notice;

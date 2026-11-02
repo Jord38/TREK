@@ -89,5 +89,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'TREKの新機能: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'すべての変更を見る',
+  'system_notice.welcome_tour.title': 'TREKへようこそ',
+  'system_notice.welcome_tour.body':
+    'TREKでできることを2分で紹介します。フライトと列車をひとつのタイムラインに、ハイキングを地形図に、フォトブック、費用の割り勘、AIとの旅行計画。',
+  'system_notice.welcome_tour.video_label': 'TREKのツアー',
+  'system_notice.welcome_tour.cta': '最初の旅行を計画する',
 };
 export default system_notice;

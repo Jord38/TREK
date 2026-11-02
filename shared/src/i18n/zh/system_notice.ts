@@ -89,5 +89,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'TREK 新变化：{title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': '查看所有更改',
+  'system_notice.welcome_tour.title': '欢迎使用 TREK',
+  'system_notice.welcome_tour.body':
+    '两分钟了解 TREK 能做什么：航班和火车在同一条时间线上，徒步路线显示在地形图上，还有相册、费用分摊以及与 AI 一起规划行程。',
+  'system_notice.welcome_tour.video_label': 'TREK 导览',
+  'system_notice.welcome_tour.cta': '规划你的第一次旅行',
 };
 export default system_notice;

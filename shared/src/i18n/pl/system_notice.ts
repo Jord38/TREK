@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Nowość w TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Zobacz wszystkie zmiany',
+  'system_notice.welcome_tour.title': 'Witamy w TREK',
+  'system_notice.welcome_tour.body':
+    'Dwuminutowa wycieczka po tym, co potrafi TREK: loty i pociągi na jednej osi czasu, wędrówki na mapie topograficznej, fotoksiążki, dzielenie kosztów i planowanie z Twoją AI.',
+  'system_notice.welcome_tour.video_label': 'Wycieczka po TREK',
+  'system_notice.welcome_tour.cta': 'Zaplanuj swoją pierwszą podróż',
 };
 export default system_notice;

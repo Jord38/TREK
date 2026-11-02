@@ -91,5 +91,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Újdonság a TREK-ben: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Az összes változás megtekintése',
+  'system_notice.welcome_tour.title': 'Üdvözöl a TREK',
+  'system_notice.welcome_tour.body':
+    'Kétperces körút arról, mire képes a TREK: repülők és vonatok egy idővonalon, túrák topográfiai térképen, fotókönyvek, megosztott költségek és tervezés a mesterséges intelligenciáddal.',
+  'system_notice.welcome_tour.video_label': 'Körút a TREK-ben',
+  'system_notice.welcome_tour.cta': 'Tervezd meg az első utad',
 };
 export default system_notice;

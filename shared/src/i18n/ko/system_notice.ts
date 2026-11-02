@@ -91,5 +91,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'TREK 새 소식: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': '모든 변경 사항 보기',
+  'system_notice.welcome_tour.title': 'TREK에 오신 것을 환영합니다',
+  'system_notice.welcome_tour.body':
+    'TREK으로 할 수 있는 일을 2분 만에 둘러보세요: 항공편과 기차를 하나의 타임라인에, 지형도 위의 하이킹, 포토북, 비용 나누기, AI와 함께하는 여행 계획.',
+  'system_notice.welcome_tour.video_label': 'TREK 둘러보기',
+  'system_notice.welcome_tour.cta': '첫 여행 계획하기',
 };
 export default system_notice;

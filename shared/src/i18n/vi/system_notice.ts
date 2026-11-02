@@ -94,5 +94,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Mới trong TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Xem tất cả thay đổi',
+  'system_notice.welcome_tour.title': 'Chào mừng đến với TREK',
+  'system_notice.welcome_tour.body':
+    'Chuyến tham quan hai phút về những gì TREK có thể làm: chuyến bay và tàu hỏa trên một dòng thời gian, đường đi bộ đường dài trên bản đồ địa hình, sách ảnh, chia chi phí và lập kế hoạch với AI của bạn.',
+  'system_notice.welcome_tour.video_label': 'Tham quan TREK',
+  'system_notice.welcome_tour.cta': 'Lên kế hoạch cho chuyến đi đầu tiên',
 };
 export default system_notice;

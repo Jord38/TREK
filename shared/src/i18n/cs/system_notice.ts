@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Novinka v TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Zobrazit všechny změny',
+  'system_notice.welcome_tour.title': 'Vítejte v TREK',
+  'system_notice.welcome_tour.body':
+    'Dvouminutová prohlídka toho, co TREK umí: lety a vlaky na jedné časové ose, túry na topografické mapě, fotoknihy, dělení nákladů a plánování s vaší AI.',
+  'system_notice.welcome_tour.video_label': 'Prohlídka TREK',
+  'system_notice.welcome_tour.cta': 'Naplánujte svou první cestu',
 };
 export default system_notice;

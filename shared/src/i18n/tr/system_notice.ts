@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': "TREK'te yeni: {title}",
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Tüm değişiklikleri gör',
+  'system_notice.welcome_tour.title': "TREK'e hoş geldiniz",
+  'system_notice.welcome_tour.body':
+    "TREK'in neler yapabildiğine iki dakikalık bir bakış: uçuşlar ve trenler tek bir zaman çizelgesinde, topoğrafik haritada yürüyüşler, fotoğraf kitapları, masraf paylaşımı ve yapay zekânızla planlama.",
+  'system_notice.welcome_tour.video_label': 'TREK turu',
+  'system_notice.welcome_tour.cta': 'İlk seyahatinizi planlayın',
 };
 export default system_notice;

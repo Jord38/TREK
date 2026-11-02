@@ -91,5 +91,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'TREK 新功能：{title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': '查看所有變更',
+  'system_notice.welcome_tour.title': '歡迎使用 TREK',
+  'system_notice.welcome_tour.body':
+    '兩分鐘了解 TREK 能做什麼：航班和火車在同一條時間軸上，健行路線顯示在地形圖上，還有相簿、費用分攤以及與 AI 一起規劃行程。',
+  'system_notice.welcome_tour.video_label': 'TREK 導覽',
+  'system_notice.welcome_tour.cta': '規劃你的第一趟旅程',
 };
 export default system_notice;

@@ -90,6 +90,11 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'חדש ב-TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'הצג את כל השינויים',
+  'system_notice.welcome_tour.title': 'ברוכים הבאים ל-TREK',
+  'system_notice.welcome_tour.body':
+    'סיור של שתי דקות במה ש-TREK יודע לעשות: טיסות ורכבות על ציר זמן אחד, מסלולי הליכה על מפה טופוגרפית, ספרי תמונות, חלוקת הוצאות ותכנון עם הבינה המלאכותית שלכם.',
+  'system_notice.welcome_tour.video_label': 'סיור ב-TREK',
+  'system_notice.welcome_tour.cta': 'תכננו את הטיול הראשון שלכם',
 };
 
 export default system_notice;

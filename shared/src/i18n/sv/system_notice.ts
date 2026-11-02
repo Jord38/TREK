@@ -92,5 +92,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'Nytt i TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'Se alla ändringar',
+  'system_notice.welcome_tour.title': 'Välkommen till TREK',
+  'system_notice.welcome_tour.body':
+    'En tvåminuters rundtur i vad TREK kan göra: flyg och tåg på en tidslinje, vandringar på en topografisk karta, fotoböcker, delade kostnader och planering med din AI.',
+  'system_notice.welcome_tour.video_label': 'En rundtur i TREK',
+  'system_notice.welcome_tour.cta': 'Planera din första resa',
 };
 export default system_notice;

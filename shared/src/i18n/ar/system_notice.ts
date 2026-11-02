@@ -89,5 +89,10 @@ const system_notice: TranslationStrings = {
   'system_notice.fork_changelog.title': 'جديد في TREK: {title}',
   'system_notice.fork_changelog.body': '{list}',
   'system_notice.fork_changelog.cta': 'عرض كل التغييرات',
+  'system_notice.welcome_tour.title': 'مرحبًا بك في TREK',
+  'system_notice.welcome_tour.body':
+    'جولة لمدة دقيقتين فيما يمكن أن يفعله TREK: الرحلات الجوية والقطارات على خط زمني واحد، والمشي على خريطة طبوغرافية، وكتب الصور، وتقسيم التكاليف، والتخطيط مع الذكاء الاصطناعي.',
+  'system_notice.welcome_tour.video_label': 'جولة في TREK',
+  'system_notice.welcome_tour.cta': 'خطط لرحلتك الأولى',
 };
 export default system_notice;

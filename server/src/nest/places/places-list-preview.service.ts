@@ -4,12 +4,14 @@ import { getCountryFromCoords } from '../../utils/country-borders';
 import { DomainError } from '../common/domain-error';
 import { PlaceImportService } from '../place-import/place-import.service';
 import { InjectRepository } from '@mikro-orm/nestjs';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import type { ListPreviewPlace, PlaceListPreviewResponse } from '@trek/shared';
 
 /** Reads a shared list and classifies each place against the trip's places. Never writes. */
 @Injectable()
 export class PlacesListPreviewService {
+  private readonly logger = new Logger(PlacesListPreviewService.name);
+
   constructor(
     private readonly placeImport: PlaceImportService,
     @InjectRepository(Places) private readonly placesRepo: PlacesRepository,
@@ -49,7 +51,7 @@ export class PlacesListPreviewService {
       return await this.placeImport.readGoogleList(url);
     } catch (err: unknown) {
       if (err instanceof DomainError) throw err;
-      console.error('[Places] Google list preview error:', err instanceof Error ? err.message : err);
+      this.logger.error(`Google list preview error: ${err instanceof Error ? err.message : String(err)}`);
       throw new DomainError(400, 'Failed to import Google Maps list. Make sure the list is shared publicly.');
     }
   }

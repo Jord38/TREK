@@ -3,7 +3,8 @@ name: Build jord image
 # Builds this fork's image for trek.jord.cloud and pushes it to GHCR as
 # <upstream version>-jord.<run number>. APP_VERSION stays the upstream version:
 # plugins check their host range against it, and the places issuer's
-# registration dialect is bound to it.
+# registration dialect is bound to it. APP_BUILD carries the full tag name, so
+# the update notice and About see each fork build.
 
 on:
   push:
@@ -34,6 +35,7 @@ jobs:
           image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/trek"
           {
             echo "version=$version"
+            echo "build=$version-jord.$GITHUB_RUN_NUMBER"
             echo "tag=$image:$version-jord.$GITHUB_RUN_NUMBER"
             echo "revision=$(git rev-parse HEAD)"
             echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -56,6 +58,7 @@ jobs:
           tags: ${{ steps.meta.outputs.tag }}
           build-args: |
             APP_VERSION=${{ steps.meta.outputs.version }}
+            APP_BUILD=${{ steps.meta.outputs.build }}
           labels: |
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.url=https://github.com/${{ github.repository }}

@@ -93,12 +93,13 @@ describe('registry integrity', () => {
     expect(welcome!.media).toMatchObject({ kind: 'video', src: '/media/trek-intro.mp4' });
     expect(welcome!.recurring).toBeUndefined();
     const ctx = (login_count: number) => ({
-      user: { login_count, first_seen_version: '5.1.0', role: 'user', noTrips: 0 },
+      user: { login_count, first_seen_version: '5.1.0', role: 'user', noTrips: 0, created_at: null },
       currentAppVersion: '5.1.0',
       now: new Date('2026-11-02T12:00:00Z'),
       addonEnabled: () => false,
       managed: false,
       settingFlag: () => false,
+      forkLiveSince: () => null,
     });
     expect(evaluate(welcome!, ctx(1))).toBe(true);
     expect(evaluate(welcome!, ctx(2))).toBe(false);

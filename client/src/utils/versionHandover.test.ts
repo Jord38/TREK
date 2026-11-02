@@ -632,3 +632,62 @@ describe('switchToServerVersion: the reload the user asked for', () => {
     expect(reload).toHaveBeenCalledTimes(1)
   })
 })
+
+describe('builds: the fork build name beside the version', () => {
+  const stubBundleBuild = (build: string) => vi.stubGlobal('__TREK_UI_BUILD__', build)
+  afterEach(() => {
+    vi.unstubAllGlobals()
+    sessionStorage.removeItem('trek_app_version_reload')
+  })
+
+  it('FE-UTIL-VERSION-050: offersNewBuild compares builds when this page and the server both have one', async () => {
+    stubBundleBuild('fork.1')
+    const { offersNewBuild } = await loadModule()
+    expect(offersNewBuild(BUILT, 'fork.2')).toBe(true)
+    expect(offersNewBuild(BUILT, 'fork.1')).toBe(false)
+  })
+
+  it('FE-UTIL-VERSION-051: offersNewBuild falls back to versions when either side has no build', async () => {
+    const { offersNewBuild } = await loadModule()
+    expect(offersNewBuild(BUILT, 'fork.2')).toBe(false)
+    expect(offersNewBuild(`${BUILT}-next`, 'fork.2')).toBe(true)
+    stubBundleBuild('fork.1')
+    const again = await loadModule()
+    expect(again.offersNewBuild(BUILT, null)).toBe(false)
+    expect(again.offersNewBuild(`${BUILT}-next`)).toBe(true)
+  })
+
+  it('FE-UTIL-VERSION-052: a launch on the same version but another build hands over, and the marker records the build', async () => {
+    stubBundleBuild('fork.1')
+    const { container, registration } = installWorker()
+    const incoming = updateInstalls(registration)
+    const { reconcileAppVersion } = await loadModule()
+    localStorage.setItem('trek_app_version', 'fork.1')
+
+    await reconcileAppVersion(BUILT, 'fork.2')
+    expect(reload).not.toHaveBeenCalled()
+    incoming.become('activated')
+    container.takeOver()
+    expect(marker()).toBe('fork.2')
+    expect(reload).toHaveBeenCalledTimes(1)
+  })
+
+  it('FE-UTIL-VERSION-053: a launch on the build this page runs changes nothing', async () => {
+    stubBundleBuild('fork.1')
+    installWorker()
+    const { reconcileAppVersion } = await loadModule()
+    localStorage.setItem('trek_app_version', 'fork.1')
+    await reconcileAppVersion(BUILT, 'fork.1')
+    expect(reload).not.toHaveBeenCalled()
+    expect(marker()).toBe('fork.1')
+  })
+
+  it('FE-UTIL-VERSION-054: without a build on either side the version still decides', async () => {
+    installWorker()
+    const { reconcileAppVersion } = await loadModule()
+    await reconcileAppVersion('4.3.1')
+    expect(marker()).toBe('4.3.1')
+    await reconcileAppVersion('4.3.1', null)
+    expect(marker()).toBe('4.3.1')
+  })
+})

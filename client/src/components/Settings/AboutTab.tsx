@@ -21,6 +21,8 @@ import { StatusPill } from './settingsKit';
 
 interface Props {
   appVersion: string;
+  /** The fork build name, shown instead of the version when the server has one. */
+  build?: string | null;
 }
 
 const DISCORD_PATH =
@@ -201,12 +203,12 @@ function DataforestBanner() {
   );
 }
 
-export default function AboutTab({ appVersion }: Props): React.ReactElement {
+export default function AboutTab({ appVersion, build }: Props): React.ReactElement {
   const { t } = useTranslation();
   const managed = useAuthStore((s) => s.managed);
 
   return (
-    <Section title={t('settings.about')} icon={Info} badge={<StatusPill>v{appVersion}</StatusPill>}>
+    <Section title={t('settings.about')} icon={Info} badge={<StatusPill>{build || `v${appVersion}`}</StatusPill>}>
       <style>{`
         @keyframes heartPulse {
           0%, 100% { transform: scale(1); }

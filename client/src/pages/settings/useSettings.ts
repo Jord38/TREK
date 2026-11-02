@@ -17,11 +17,15 @@ export function useSettings() {
   const hasPlugins = usePluginStore(s => s.plugins.length > 0)
 
   const [appVersion, setAppVersion] = useState<string | null>(null)
+  const [build, setBuild] = useState<string | null>(null)
   const [activeTab, setActiveTab] = useState('display')
 
   useEffect(() => {
     loadAddons()
-    authApi.getAppConfig?.().then(c => setAppVersion(c?.version)).catch(() => {})
+    authApi.getAppConfig?.().then(c => {
+      setAppVersion(c?.version)
+      setBuild(c?.build ?? null)
+    }).catch(() => {})
   }, [])
 
   // Auto-switch to account tab when MFA is required
@@ -39,5 +43,5 @@ export function useSettings() {
     if (tab) setActiveTab(tab)
   }, [searchParams])
 
-  return { hasIntegrations, hasPlugins, appVersion, activeTab, setActiveTab, managed }
+  return { hasIntegrations, hasPlugins, appVersion, build, activeTab, setActiveTab, managed }
 }

@@ -1,4 +1,4 @@
-import { runningVersion } from '../../app-config';
+import { runningBuild, runningVersion } from '../../app-config';
 import { AppSettings } from '../../db/entities/AppSettings.entity';
 import { Users } from '../../db/entities/Users.entity';
 import type { AppSettingsRepository } from '../../db/repositories/AppSettings.repository';
@@ -158,7 +158,7 @@ export class RealtimeGateway implements OnGatewayInit, OnGatewayConnection, OnGa
       // The version lets a client that stayed open across a deploy notice it
       // runs the previous build: a deploy restarts the server, so every open
       // client reconnects and reads this again.
-      socket.send(JSON.stringify({ type: 'welcome', socketId: sid, version: runningVersion() }));
+      socket.send(JSON.stringify({ type: 'welcome', socketId: sid, version: runningVersion(), build: runningBuild() }));
       socket.on('pong', () => {
         socket.isAlive = true;
       });

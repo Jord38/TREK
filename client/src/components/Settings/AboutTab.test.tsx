@@ -19,6 +19,12 @@ describe('AboutTab', () => {
     expect(screen.getByText('v2.9.10')).toBeInTheDocument();
   });
 
+  it('FE-COMP-ABOUT-002b: displays the build name instead of the version when the server has one', () => {
+    render(<AboutTab appVersion="5.1.0" build="5.1.0-jord.3" />);
+    expect(screen.getByText('5.1.0-jord.3')).toBeInTheDocument();
+    expect(screen.queryByText('v5.1.0')).toBeNull();
+  });
+
   it('FE-COMP-ABOUT-003: displays Ko-fi link with correct href', () => {
     render(<AboutTab appVersion="2.9.10" />);
     const link = screen.getByText('Ko-fi').closest('a');

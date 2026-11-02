@@ -17,13 +17,15 @@ import React, { useState } from 'react'
 import { RefreshCw, X } from 'lucide-react'
 import { useServerVersionStore } from '../../store/serverVersionStore'
 import { useNetworkMode } from '../../hooks/useNetworkMode'
-import { offersNewBuild, switchToServerVersion } from '../../utils/versionHandover'
+import { offersNewBuild, releaseIdentity, switchToServerVersion } from '../../utils/versionHandover'
 import { useTranslation } from '../../i18n'
 
 export default function NewVersionNotice(): React.ReactElement | null {
   const { t } = useTranslation()
   const reported = useServerVersionStore(s => s.reported)
   const first = useServerVersionStore(s => s.first)
+  const reportedBuild = useServerVersionStore(s => s.reportedBuild)
+  const firstBuild = useServerVersionStore(s => s.firstBuild)
   const { offline } = useNetworkMode()
   const [dismissed, setDismissed] = useState<string | null>(null)
   const [switching, setSwitching] = useState(false)
@@ -31,11 +33,16 @@ export default function NewVersionNotice(): React.ReactElement | null {
   // Only a version that changed while this page was open: a different build at
   // launch is the launch handover's to fix, and an install whose server never
   // reports the bundle's version would otherwise be asked every session.
-  if (offline || !reported || reported === first || reported === dismissed || !offersNewBuild(reported)) return null
+  const identity = reported ? releaseIdentity(reported, reportedBuild) : null
+  if (
+    offline || !reported || !identity
+    || identity === (first ? releaseIdentity(first, firstBuild) : null)
+    || identity === dismissed || !offersNewBuild(reported, reportedBuild)
+  ) return null
 
   const reload = (): void => {
     setSwitching(true)
-    void switchToServerVersion(reported)
+    void switchToServerVersion(identity)
   }
 
   return (
@@ -58,7 +65,7 @@ export default function NewVersionNotice(): React.ReactElement | null {
       </button>
       <button
         type="button"
-        onClick={() => setDismissed(reported)}
+        onClick={() => setDismissed(identity)}
         disabled={switching}
         aria-label={t('common.close')}
         className="shrink-0 rounded-md p-1 text-content-muted hover:bg-surface-hover disabled:opacity-60"

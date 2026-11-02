@@ -12,16 +12,30 @@ interface ServerVersionState {
   first: string | null
   /** The last version the server reported, or null before its first report. */
   reported: string | null
-  /** Takes a reported version; anything but a release tag is ignored. */
-  note: (value: unknown) => void
+  /** The fork build name that came with `first`, or null when the server has none. */
+  firstBuild: string | null
+  /** The fork build name that came with `reported`, or null when the server has none. */
+  reportedBuild: string | null
+  /** Takes a reported version and its build name; anything but a release tag is ignored. */
+  note: (value: unknown, build?: unknown) => void
 }
 
 export const useServerVersionStore = create<ServerVersionState>()((set, get) => ({
   first: null,
   reported: null,
-  note(value) {
+  firstBuild: null,
+  reportedBuild: null,
+  note(value, buildValue) {
     const version = asReleaseTag(value)
-    if (!version || version === get().reported) return
-    set({ reported: version, first: get().first ?? version })
+    if (!version) return
+    const build = asReleaseTag(buildValue)
+    const { reported, reportedBuild, first, firstBuild } = get()
+    if (version === reported && build === reportedBuild) return
+    set({
+      reported: version,
+      reportedBuild: build,
+      first: first ?? version,
+      firstBuild: first === null ? build : firstBuild,
+    })
   },
 }))

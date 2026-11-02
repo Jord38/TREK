@@ -31,3 +31,25 @@ export function imageVersion(file = resolve(__dirname, '../../VERSION')): string
 export function resetImageVersion(): void {
   cached = undefined;
 }
+
+/**
+ * The build name the image was built as (`5.1.0-jord.3`), from the `BUILD` file
+ * the Dockerfile writes beside `VERSION` when a build name is set. Read once, like
+ * the version. `null` for an image without one, and outside an image.
+ */
+let cachedBuild: string | null | undefined;
+
+export function imageBuild(file = resolve(__dirname, '../../BUILD')): string | null {
+  if (cachedBuild !== undefined) return cachedBuild;
+  try {
+    cachedBuild = readFileSync(file, 'utf8').trim() || null;
+  } catch {
+    cachedBuild = null;
+  }
+  return cachedBuild;
+}
+
+/** Test seam: forget the cached read. */
+export function resetImageBuild(): void {
+  cachedBuild = undefined;
+}

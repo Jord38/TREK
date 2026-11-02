@@ -28,6 +28,8 @@ COPY client/ ./client/
 # A prerelease build does not bump client/package.json, so the bundle takes its
 # version from the same build argument the server's VERSION file comes from.
 ARG APP_VERSION=dev
+# A fork's build name (e.g. 5.1.0-jord.3), shown beside the version; empty for upstream builds.
+ARG APP_BUILD=
 RUN npm run build --workspace=client
 
 # ── Stage 3: server ──────────────────────────────────────────────────────────
@@ -134,6 +136,9 @@ ENV PORT=3000
 # first (server/src/app-config/image-version.ts).
 ARG APP_VERSION=dev
 RUN if [ "$APP_VERSION" != "dev" ]; then printf '%s\n' "$APP_VERSION" > /app/server/VERSION; fi
+# The build name goes into a file for the same reason, beside VERSION.
+ARG APP_BUILD=
+RUN if [ -n "$APP_BUILD" ]; then printf '%s\n' "$APP_BUILD" > /app/server/BUILD; fi
 
 # OCI metadata: Renovate, Watchtower and the registries read the source label to
 # link an image update to its release notes (#1498). The release workflows add

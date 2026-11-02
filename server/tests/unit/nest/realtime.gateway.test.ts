@@ -1,3 +1,4 @@
+import { imageBuild, resetImageBuild } from '../../../src/app-config/image-version';
 import type { AppSettingsRepository } from '../../../src/db/repositories/AppSettings.repository';
 import type { TripsRepository } from '../../../src/db/repositories/Trips.repository';
 import type { UsersRepository } from '../../../src/db/repositories/Users.repository';
@@ -24,6 +25,9 @@ import { TripAccessService } from '../../../src/nest/trip-membership/trip-access
 import { emitPluginEvent } from '../../../src/plugin-event-sink';
 import type { User } from '../../../src/types';
 
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 /**
@@ -160,6 +164,30 @@ describe('RealtimeGateway handshake', () => {
     const welcome = JSON.parse(ws.sent[0]) as { type: string; version: unknown };
     expect(welcome.version).toBe(hostVersion());
     expect(welcome.version).toMatch(/^\d+\.\d+\.\d+/);
+  });
+
+  it('WSGW-007e: the welcome frame carries the build name beside the version', async () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'trek-ws-build-'));
+    fs.writeFileSync(path.join(dir, 'BUILD'), '5.1.0-jord.3\n');
+    resetImageBuild();
+    imageBuild(path.join(dir, 'BUILD'));
+    try {
+      const { ws } = await connect('/ws?token=x');
+      const welcome = JSON.parse(ws.sent[0]) as { version: unknown; build: unknown };
+      expect(welcome.build).toBe('5.1.0-jord.3');
+      expect(welcome.version).toBe(hostVersion());
+    } finally {
+      resetImageBuild();
+      fs.rmSync(dir, { recursive: true, force: true });
+    }
+  });
+
+  it('WSGW-007f: the welcome frame carries build null for an image without one', async () => {
+    resetImageBuild();
+    imageBuild(path.join(os.tmpdir(), 'trek-no-such-dir', 'BUILD'));
+    const { ws } = await connect('/ws?token=x');
+    expect((JSON.parse(ws.sent[0]) as { build: unknown }).build).toBeNull();
+    resetImageBuild();
   });
 
   it('WSGW-007b: survives an upgrade request with no url, rather than throwing at it', async () => {

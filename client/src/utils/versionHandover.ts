@@ -27,6 +27,10 @@ const RELOAD_KEY = 'trek_app_version_reload'
 // and then no version counts as this bundle's own.
 const BUNDLE_VERSION: string = typeof __TREK_UI_VERSION__ === 'string' ? __TREK_UI_VERSION__ : ''
 
+// The fork build name this bundle was built as (vite.config.js, APP_BUILD). Empty
+// for upstream builds, which then keep comparing versions alone.
+const BUNDLE_BUILD: string = typeof __TREK_UI_BUILD__ === 'string' ? __TREK_UI_BUILD__ : ''
+
 // The worker that served this page, noted when the app loads (serviceWorkerShell).
 // When the browser's own check of sw.js installs the new build before the server
 // has told us its version, the takeover is over before anyone listens for it.
@@ -34,6 +38,20 @@ const servedBy = servingWorker()
 
 function markApplied(version: string): void {
   try { localStorage.setItem(VERSION_KEY, version) } catch { /* site data blocked */ }
+}
+
+/** What a server reports as the build it runs: its build name when it has one, else its version. */
+export function releaseIdentity(version: string, build?: string | null): string {
+  return build || version
+}
+
+/**
+ * Whether this page is the build the server reports. Builds are compared when
+ * this bundle and the server both have one: a fork build bumps its build name
+ * while the version stays the upstream one. Otherwise versions decide.
+ */
+function runsBuild(version: string, build?: string | null): boolean {
+  return build && BUNDLE_BUILD ? build === BUNDLE_BUILD : version === BUNDLE_VERSION
 }
 
 /**
@@ -111,10 +129,10 @@ export function asReleaseTag(value: unknown): string | null {
  * that version, another reload would only show the same build again (a proxy
  * or the server reporting a version its bundle was not built as).
  */
-export function offersNewBuild(version: string | null): boolean {
-  if (!version || !BUNDLE_VERSION || version === BUNDLE_VERSION) return false
+export function offersNewBuild(version: string | null, build?: string | null): boolean {
+  if (!version || !BUNDLE_VERSION || runsBuild(version, build)) return false
   try {
-    return sessionStorage.getItem(RELOAD_KEY) !== version
+    return sessionStorage.getItem(RELOAD_KEY) !== releaseIdentity(version, build)
   } catch {
     // No session storage, no reload guard, and reloadOnce does not reload.
     return false
@@ -195,9 +213,13 @@ function waitForTakeover(reg: ServiceWorkerRegistration, version: string): Promi
  * lost signal in that window could no longer start it offline, and it threw
  * away the map tiles and files the user had downloaded on purpose.
  */
-export async function reconcileAppVersion(reported: unknown): Promise<void> {
-  const version = asReleaseTag(reported)
-  if (!version) return
+export async function reconcileAppVersion(reported: unknown, reportedBuild?: unknown): Promise<void> {
+  const reportedVersion = asReleaseTag(reported)
+  if (!reportedVersion) return
+  const build = asReleaseTag(reportedBuild)
+  // The marker, the reload guard and the handover all work on this: the build
+  // name where there is one, so a new build of the same version counts as new.
+  const version = releaseIdentity(reportedVersion, build)
 
   let storedVersion: string | null
   try {
@@ -228,7 +250,7 @@ export async function reconcileAppVersion(reported: unknown): Promise<void> {
   // worker still in charge (this page was loaded past it, as a hard reload
   // does) would serve its own build to the next tab or launch, so it is handed
   // over like any other, just without the reload.
-  const runsIt = !servedBy && version === BUNDLE_VERSION
+  const runsIt = !servedBy && runsBuild(reportedVersion, build)
   if (runsIt && (!reg?.active || reg.active === currentController())) {
     markApplied(version)
     return

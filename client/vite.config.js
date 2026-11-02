@@ -22,7 +22,10 @@ const DEV_PORT = Number(process.env.TREK_DEV_PORT) || 5173;
 const API_TARGET = process.env.TREK_DEV_API || 'http://localhost:3001';
 
 export default defineConfig(({ mode }) => ({
-  define: { __TREK_UI_VERSION__: JSON.stringify(UI_VERSION) },
+  define: {
+    __TREK_UI_VERSION__: JSON.stringify(UI_VERSION),
+    __TREK_UI_BUILD__: JSON.stringify(process.env.APP_BUILD ?? ''),
+  },
   plugins: [
     react(),
     mode === 'analyze' &&

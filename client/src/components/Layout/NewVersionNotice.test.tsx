@@ -7,6 +7,9 @@ import NewVersionNotice from './NewVersionNotice'
 import { useServerVersionStore } from '../../store/serverVersionStore'
 import { _resetNetworkMode, setForcedOffline } from '../../sync/networkMode'
 
+// A fork bundle: the build it was built as, read when versionHandover loads.
+vi.hoisted(() => { vi.stubGlobal('__TREK_UI_BUILD__', 'fork.1') })
+
 const switchToServerVersion = vi.fn(async (_version: string) => {})
 vi.mock('../../utils/versionHandover', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../utils/versionHandover')>()),
@@ -18,7 +21,7 @@ const BUILT = __TREK_UI_VERSION__
 const NEXT = `${BUILT}-next`
 
 beforeEach(() => {
-  useServerVersionStore.setState({ first: null, reported: null })
+  useServerVersionStore.setState({ first: null, reported: null, firstBuild: null, reportedBuild: null })
 })
 
 /** The page starts on this build's version; then the server reports `version`. */
@@ -85,6 +88,28 @@ describe('NewVersionNotice', () => {
     // Also an install whose server never reports the bundle's version: no notice every session.
     render(<NewVersionNotice />)
     act(() => useServerVersionStore.getState().note(NEXT))
+    expect(screen.queryByRole('status')).toBeNull()
+  })
+
+  it('FE-LAYOUT-NEWVER-007: offers the reload for a new build of the same version, and hands the build to the switch', async () => {
+    const store = useServerVersionStore
+    render(<NewVersionNotice />)
+    act(() => {
+      store.getState().note(BUILT, 'fork.1')
+      store.getState().note(BUILT, 'fork.2')
+    })
+    expect(screen.getByRole('status')).toHaveTextContent('A new version is available')
+    await userEvent.click(screen.getByRole('button', { name: 'Reload page' }))
+    expect(switchToServerVersion).toHaveBeenCalledWith('fork.2')
+  })
+
+  it('FE-LAYOUT-NEWVER-008: says nothing when the build reported is the one this page runs', async () => {
+    const store = useServerVersionStore
+    render(<NewVersionNotice />)
+    act(() => {
+      store.getState().note(BUILT, 'fork.0')
+      store.getState().note(BUILT, 'fork.1')
+    })
     expect(screen.queryByRole('status')).toBeNull()
   })
 })

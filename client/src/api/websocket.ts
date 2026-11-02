@@ -83,7 +83,7 @@ function handleMessage(event: MessageEvent): void {
     const parsed = JSON.parse(event.data)
     if (parsed.type === 'welcome') {
       mySocketId = parsed.socketId
-      useServerVersionStore.getState().note(parsed.version)
+      useServerVersionStore.getState().note(parsed.version, parsed.build)
       return
     }
     listeners.forEach(fn => {

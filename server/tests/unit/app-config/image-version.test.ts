@@ -1,5 +1,6 @@
+import { runningBuild } from '../../../src/app-config';
 import { deriveApp } from '../../../src/app-config/derive';
-import { imageVersion, resetImageVersion } from '../../../src/app-config/image-version';
+import { imageBuild, imageVersion, resetImageBuild, resetImageVersion } from '../../../src/app-config/image-version';
 
 import fs from 'node:fs';
 import os from 'node:os';
@@ -48,5 +49,41 @@ describe('imageVersion', () => {
   it('IMGVER-005: without an image file, APP_VERSION still decides', () => {
     imageVersion(path.join(os.tmpdir(), 'trek-no-such-dir', 'VERSION'));
     expect(deriveApp({ APP_VERSION: '4.3.3' }).appVersion).toBe('4.3.3');
+  });
+});
+
+describe('imageBuild', () => {
+  const dirs: string[] = [];
+  const buildFile = (content: string): string => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'trek-image-build-'));
+    dirs.push(dir);
+    const file = path.join(dir, 'BUILD');
+    fs.writeFileSync(file, content);
+    return file;
+  };
+
+  beforeEach(() => resetImageBuild());
+
+  afterEach(() => {
+    resetImageBuild();
+    for (const dir of dirs.splice(0)) fs.rmSync(dir, { recursive: true, force: true });
+  });
+
+  it('IMGBUILD-001: reads the build name the image was built as, trimmed', () => {
+    expect(imageBuild(buildFile('5.1.0-jord.3\n'))).toBe('5.1.0-jord.3');
+  });
+
+  it('IMGBUILD-002: is null without a BUILD file and for an empty one', () => {
+    expect(imageBuild(path.join(os.tmpdir(), 'trek-no-such-dir', 'BUILD'))).toBeNull();
+    resetImageBuild();
+    expect(imageBuild(buildFile(' \n'))).toBeNull();
+  });
+
+  it('IMGBUILD-003: runningBuild announces the BUILD file content, null without one', () => {
+    imageBuild(buildFile('5.1.0-jord.3'));
+    expect(runningBuild()).toBe('5.1.0-jord.3');
+    resetImageBuild();
+    imageBuild(path.join(os.tmpdir(), 'trek-no-such-dir', 'BUILD'));
+    expect(runningBuild()).toBeNull();
   });
 });

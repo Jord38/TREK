@@ -1,0 +1,66 @@
+name: Build jord image
+
+# Builds this fork's image for trek.jord.cloud and pushes it to GHCR as
+# <upstream version>-jord.<run number>. APP_VERSION stays the upstream version:
+# plugins check their host range against it, and the places issuer's
+# registration dialect is bound to it.
+
+on:
+  push:
+    branches: [jord]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: jord-image
+  cancel-in-progress: false
+
+jobs:
+  image:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Version and tags
+        id: meta
+        run: |
+          version="$(node -p 'require("./package.json").version')"
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/trek"
+          {
+            echo "version=$version"
+            echo "tag=$image:$version-jord.$GITHUB_RUN_NUMBER"
+            echo "revision=$(git rev-parse HEAD)"
+            echo "created=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+          } >> "$GITHUB_OUTPUT"
+
+      - uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - uses: docker/login-action@dbcb813823bdd20940b903addbd779551569679f # v4.6.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tag }}
+          build-args: |
+            APP_VERSION=${{ steps.meta.outputs.version }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.url=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ steps.meta.outputs.revision }}
+            org.opencontainers.image.created=${{ steps.meta.outputs.created }}
+
+      - name: Summary
+        run: echo "Pushed \`${{ steps.meta.outputs.tag }}\`" >> "$GITHUB_STEP_SUMMARY"

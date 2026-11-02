@@ -59,6 +59,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited': '訪問した場所',
   'atlas.planned': '予定',
   'atlas.showPlanned': '予定の国を表示',
+  'atlas.placeNames': '地名',
+  'atlas.showPlaceNames': '地名を表示',
   'atlas.plannedFor': '予定日',
   'atlas.antarctica': '南極',
   'atlas.regionPlacesLabel': 'か所',

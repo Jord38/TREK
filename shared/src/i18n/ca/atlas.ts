@@ -69,6 +69,8 @@ const atlas: TranslationStrings = {
   'atlas.bucketDuplicate': 'Ja és a la teva llista de desitjos',
   'atlas.planned': 'Planificat',
   'atlas.showPlanned': 'Mostra els països planificats',
+  'atlas.placeNames': 'Noms de llocs',
+  'atlas.showPlaceNames': 'Mostra els noms de llocs',
   'atlas.plannedFor': 'Planificat per a',
   'atlas.antarctica': 'Antàrtida',
   'atlas.regionPlacesLabel': 'llocs',

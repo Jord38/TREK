@@ -77,6 +77,8 @@ const atlas: TranslationStrings = {
 
   'atlas.planned': 'Planlaşdırılıb',
   'atlas.showPlanned': 'Planlaşdırılan ölkələri göstər',
+  'atlas.placeNames': 'Yer adları',
+  'atlas.showPlaceNames': 'Yer adlarını göstər',
   'atlas.plannedFor': 'Planlaşdırılan tarix',
   'atlas.antarctica': 'Antarktida',
   'atlas.regionPlacesLabel': 'məkan',

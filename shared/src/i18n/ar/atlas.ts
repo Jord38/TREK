@@ -109,6 +109,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited.many': 'مكانًا تمت زيارته',
   'atlas.planned': 'مُخطط',
   'atlas.showPlanned': 'إظهار الدول المخطط زيارتها',
+  'atlas.placeNames': 'أسماء الأماكن',
+  'atlas.showPlaceNames': 'إظهار أسماء الأماكن',
   'atlas.plannedFor': 'مخطط لـ',
   'atlas.antarctica': 'أنتاركتيكا',
   'atlas.regionPlacesLabel': 'مكان',

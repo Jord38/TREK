@@ -79,6 +79,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited.few': 'Navštívené miesta',
   'atlas.planned': 'Plánované',
   'atlas.showPlanned': 'Zobraziť plánované krajiny',
+  'atlas.placeNames': 'Názvy miest',
+  'atlas.showPlaceNames': 'Zobraziť názvy miest',
   'atlas.plannedFor': 'Plánované na',
   'atlas.antarctica': 'Antarktída',
   'atlas.regionPlacesLabel': 'miest',

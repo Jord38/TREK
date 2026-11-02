@@ -69,6 +69,8 @@ const atlas: TranslationStrings = {
   'atlas.bucketDuplicate': 'Déjà dans votre bucket list',
   'atlas.planned': 'Prévu',
   'atlas.showPlanned': 'Afficher les pays prévus',
+  'atlas.placeNames': 'Noms de lieux',
+  'atlas.showPlaceNames': 'Afficher les noms de lieux',
   'atlas.plannedFor': 'Prévu pour',
   'atlas.antarctica': 'Antarctique',
   'atlas.regionPlacesLabel': 'lieux',

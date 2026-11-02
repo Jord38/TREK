@@ -275,34 +275,43 @@ export async function attachVectorBasemap(
     return
   }
   ref.current = layer
-  if (opts.hideLabels) hideLabelLayers(layer)
+  if (opts.hideLabels) setLabelLayersVisible(layer, false)
 }
 
+/** Whether each GL map should show its labels; read again on every style.load. */
+const labelsVisible = new WeakMap<object, boolean>()
+
 /**
- * Drop every label from a vector style.
+ * Show or hide every label of a vector style.
  *
- * The atlas draws country names into its own fills, so a basemap that repeats them
- * underneath is noise. OpenFreeMap has no label-free style, but its labels are all
- * `symbol` layers, while borders and coastlines are `line` and `fill`, so hiding
- * that one type leaves the geography intact.
+ * OpenFreeMap has no label-free style, but its labels are all `symbol` layers,
+ * while borders and coastlines are `line` and `fill`, so toggling that one type
+ * leaves the geography intact.
  *
  * Bound to `style.load` rather than run once: the event fires again after every
- * setStyle, so a theme switch keeps the labels off without a second call site.
+ * setStyle, so a theme switch keeps the latest choice. The listener is bound once
+ * per GL map and reads the choice from `labelsVisible`, so flipping it often does
+ * not stack listeners that disagree. Returns whether the layer can toggle its
+ * labels at all.
  */
-export function hideLabelLayers(layer: BasemapLayer): void {
-  // Nothing to hide on the raster stand-in: OSM bakes its labels into the tile.
-  // A WebGL-less atlas therefore shows country names twice, which is cosmetic and
-  // the price of having a basemap at all, because the only keyless alternative is
-  // none.
-  if (!isGlLayer(layer)) return
+export function setLabelLayersVisible(layer: BasemapLayer, visible: boolean): boolean {
+  // Nothing to toggle on the raster stand-in: OSM bakes its labels into the tile.
+  // A WebGL-less atlas therefore always shows them, which is cosmetic and the price
+  // of having a basemap at all, because the only keyless alternative is none.
+  if (!isGlLayer(layer)) return false
   const gl = layer.getMaplibreMap()
-  if (!gl) return
+  if (!gl) return false
   const apply = () => {
+    const visibility = labelsVisible.get(gl) ? 'visible' : 'none'
     for (const l of gl.getStyle()?.layers ?? []) {
-      if (l.type === 'symbol') gl.setLayoutProperty(l.id, 'visibility', 'none')
+      if (l.type === 'symbol') gl.setLayoutProperty(l.id, 'visibility', visibility)
     }
   }
-  gl.on('style.load', apply)
-  // The first style may already be in when we get here.
-  if (gl.isStyleLoaded()) apply()
+  if (!labelsVisible.has(gl)) gl.on('style.load', apply)
+  labelsVisible.set(gl, visible)
+  // Not behind isStyleLoaded(): that stays false while any tile loads, so a flip
+  // then would wait for a restyle that never comes. Before the style is in,
+  // getStyle() has no layers and the style.load listener covers it.
+  apply()
+  return true
 }

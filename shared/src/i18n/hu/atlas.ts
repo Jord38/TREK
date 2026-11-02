@@ -69,6 +69,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited.one': 'Meglátogatott hely',
   'atlas.planned': 'Tervezett',
   'atlas.showPlanned': 'Tervezett országok megjelenítése',
+  'atlas.placeNames': 'Helynevek',
+  'atlas.showPlaceNames': 'Helynevek megjelenítése',
   'atlas.plannedFor': 'Tervezve erre',
   'atlas.antarctica': 'Antarktisz',
   'atlas.regionPlacesLabel': 'hely',

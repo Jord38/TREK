@@ -59,6 +59,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited': 'Địa điểm đã ghé thăm',
   'atlas.planned': 'Đã lên kế hoạch',
   'atlas.showPlanned': 'Hiện các quốc gia đã lên kế hoạch',
+  'atlas.placeNames': 'Tên địa danh',
+  'atlas.showPlaceNames': 'Hiển thị tên địa danh',
   'atlas.plannedFor': 'Dự kiến',
   'atlas.antarctica': 'Nam Cực',
   'atlas.regionPlacesLabel': 'địa điểm',

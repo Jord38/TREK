@@ -15,7 +15,7 @@ import {
   VectorBasemap,
   attachVectorBasemap,
   detachBasemapLayer,
-  hideLabelLayers,
+  setLabelLayersVisible,
   restyleBasemap,
   type BasemapLayer,
   type GlLeafletLayer,
@@ -183,17 +183,16 @@ describe('attachVectorBasemap', () => {
   })
 })
 
-describe('hideLabelLayers', () => {
+describe('setLabelLayersVisible', () => {
   it('FE-COMP-VECBM-010: hides every symbol layer and nothing else', async () => {
     const ref: { current: GlLeafletLayer | null } = { current: null }
     await attachVectorBasemap(bareMap, OFM_POSITRON, ref, () => false)
     const { layer, gl } = lastLayer()
     gl.isStyleLoaded.mockReturnValue(true)
 
-    hideLabelLayers(layer)
+    setLabelLayersVisible(layer, false)
 
-    // The atlas draws country names into its own fills, so basemap labels repeat
-    // them. Borders and coastlines are line/fill layers and have to survive.
+    // Borders and coastlines are line/fill layers and have to survive.
     expect(gl.setLayoutProperty).toHaveBeenCalledWith('place-city', 'visibility', 'none')
     expect(gl.setLayoutProperty).toHaveBeenCalledWith('country-label', 'visibility', 'none')
     expect(gl.setLayoutProperty).toHaveBeenCalledTimes(2)
@@ -204,8 +203,9 @@ describe('hideLabelLayers', () => {
     await attachVectorBasemap(bareMap, OFM_POSITRON, ref, () => false)
     const { layer, gl } = lastLayer()
 
-    hideLabelLayers(layer)
-    expect(gl.setLayoutProperty).not.toHaveBeenCalled() // style not loaded yet
+    gl.getStyle.mockReturnValueOnce(undefined) // style JSON not in yet
+    setLabelLayersVisible(layer, false)
+    expect(gl.setLayoutProperty).not.toHaveBeenCalled()
 
     // setStyle discards the layout properties along with the old style, so the
     // theme toggle would bring the labels back without this.
@@ -216,7 +216,52 @@ describe('hideLabelLayers', () => {
 
   it('FE-COMP-VECBM-012: does nothing when the GL map is not up yet', () => {
     const layer = { getMaplibreMap: () => undefined } as unknown as GlLeafletLayer
-    expect(() => hideLabelLayers(layer)).not.toThrow()
+    expect(() => setLabelLayersVisible(layer, false)).not.toThrow()
+  })
+
+  it('FE-COMP-VECBM-021: switching labels back on shows the symbol layers again', async () => {
+    const ref: { current: GlLeafletLayer | null } = { current: null }
+    await attachVectorBasemap(bareMap, OFM_POSITRON, ref, () => false, { hideLabels: true })
+    const { layer, gl } = lastLayer()
+    gl.isStyleLoaded.mockReturnValue(true)
+    gl.setLayoutProperty.mockClear()
+
+    setLabelLayersVisible(layer, true)
+
+    expect(gl.setLayoutProperty).toHaveBeenCalledWith('place-city', 'visibility', 'visible')
+    expect(gl.setLayoutProperty).toHaveBeenCalledWith('country-label', 'visibility', 'visible')
+    expect(gl.setLayoutProperty).toHaveBeenCalledTimes(2)
+  })
+
+  it('FE-COMP-VECBM-023: a flip while tiles are still loading applies at once', async () => {
+    const ref: { current: GlLeafletLayer | null } = { current: null }
+    await attachVectorBasemap(bareMap, OFM_POSITRON, ref, () => false, { hideLabels: true })
+    const { layer, gl } = lastLayer()
+    // isStyleLoaded() is false while any tile loads, though the style is long in.
+    gl.isStyleLoaded.mockReturnValue(false)
+    gl.setLayoutProperty.mockClear()
+
+    setLabelLayersVisible(layer, true)
+
+    expect(gl.setLayoutProperty).toHaveBeenCalledWith('place-city', 'visibility', 'visible')
+  })
+
+  it('FE-COMP-VECBM-022: a restyle keeps the latest choice, with one style.load listener however often it changes', async () => {
+    const ref: { current: GlLeafletLayer | null } = { current: null }
+    await attachVectorBasemap(bareMap, OFM_POSITRON, ref, () => false)
+    const { layer, gl } = lastLayer()
+
+    setLabelLayersVisible(layer, false)
+    setLabelLayersVisible(layer, true)
+    setLabelLayersVisible(layer, false)
+    setLabelLayersVisible(layer, true)
+
+    const listeners = gl.on.mock.calls.filter((c: unknown[]) => c[0] === 'style.load')
+    expect(listeners).toHaveLength(1)
+    gl.setLayoutProperty.mockClear()
+    ;(listeners[0][1] as () => void)()
+    expect(gl.setLayoutProperty).toHaveBeenCalledWith('place-city', 'visibility', 'visible')
+    expect(gl.setLayoutProperty).not.toHaveBeenCalledWith('place-city', 'visibility', 'none')
   })
 })
 
@@ -278,7 +323,7 @@ describe('VectorBasemap without WebGL', () => {
     // Both are GL-only operations. Called on raster tiles they must do nothing
     // rather than reach for a maplibre map that is not there.
     expect(() => restyleBasemap(ref.current, OFM_DARK)).not.toThrow()
-    expect(() => hideLabelLayers(ref.current!)).not.toThrow()
+    expect(() => setLabelLayersVisible(ref.current!, false)).not.toThrow()
   })
 })
 

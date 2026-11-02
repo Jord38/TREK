@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'Platssökning, adressökning och ruttplanering körs på TREKs egna servrar, i dag sponsrade av dataforest cloud. Jag kämpar för det varje dag, och för att det ska förbli så behövs ditt stöd.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Stöd på Ko-fi',
+  'system_notice.fork_changelog.title': 'Nytt i TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Se alla ändringar',
 };
 export default system_notice;

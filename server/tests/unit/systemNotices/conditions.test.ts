@@ -23,7 +23,7 @@ const baseCtx = {
   // noTrips joined the context when the 'noTrips' condition kind landed. 1 keeps
   // every case below reading as it did: the condition is `noTrips === 0`, so a
   // user WITH trips leaves it false and the other kinds decide on their own.
-  user: { login_count: 5, first_seen_version: '1.0.0', role: 'user', noTrips: 1 },
+  user: { login_count: 5, first_seen_version: '1.0.0', role: 'user', noTrips: 1, created_at: '2020-01-01 00:00:00' },
   currentAppVersion: '2.0.0',
   now: new Date('2026-06-01T00:00:00Z'),
   // Threaded in by the caller since the addons.bridge import left this module;
@@ -37,6 +37,8 @@ const baseCtx = {
   // (registry.ts's whitespace-collision-detected). No case below exercises a
   // custom predicate, so this stays false throughout.
   settingFlag: () => false,
+  // No changelog entry has a live time here; accountCreatedBeforeLive has its own suite.
+  forkLiveSince: () => null,
 };
 
 describe('firstLogin', () => {

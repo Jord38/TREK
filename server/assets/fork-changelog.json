@@ -1,0 +1,15 @@
+[
+  {
+    "id": "2026-11-02-fork-start",
+    "date": "2026-11-02",
+    "title": "Place names, a welcome tour and smarter list imports",
+    "items": [
+      { "kind": "added", "text": "A Show place names switch on the Atlas, on desktop and phone." },
+      { "kind": "added", "text": "New friends get a short video tour of TREK on their first login." },
+      {
+        "kind": "added",
+        "text": "Importing a Google Maps list now shows a preview: pick the countries you want, and places already in your trip are recognised, even with a slightly different name."
+      }
+    ]
+  }
+]

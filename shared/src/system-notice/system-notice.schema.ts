@@ -100,6 +100,7 @@ export const systemNoticeDtoSchema = z.object({
   display: noticeDisplaySchema,
   severity: noticeSeveritySchema,
   titleKey: z.string(),
+  titleParams: z.record(z.string(), z.string()).optional(),
   bodyKey: z.string(),
   bodyParams: z.record(z.string(), z.string()).optional(),
   icon: z.string().optional(),

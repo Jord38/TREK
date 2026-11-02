@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'La búsqueda de lugares, la búsqueda de direcciones y el cálculo de rutas funcionan en servidores propios de TREK, hoy patrocinados por dataforest cloud. Lucho por ello cada día, y para que siga así hace falta tu apoyo.',
   'system_notice.release_notes.cta_bmc': 'Invítame a un café',
   'system_notice.release_notes.cta_kofi': 'Apóyame en Ko-fi',
+  'system_notice.fork_changelog.title': 'Novedades en TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Ver todos los cambios',
 };
 export default system_notice;

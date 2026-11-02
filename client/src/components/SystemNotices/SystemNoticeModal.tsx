@@ -622,18 +622,19 @@ const escapeRe = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 // Build the NoticeContent props for a given notice + pager slot index.
 function makeContentProps(S: NoticeState, n: SystemNoticeDTO, slotIdx: number): ContentProps {
   const { t, isDark, canPage, notices, handleDismissAll, handleCTA, handleSecondaryCTA, handlePrev, handleNext, handleGoto } = S;
-  const rawBody = t(n.bodyKey);
   // The key is escaped into the pattern and the value goes in through a function, so a
   // value carrying $&, $1 or $` is inserted as typed instead of being expanded.
-  const body = n.bodyParams
-    ? Object.entries(n.bodyParams).reduce(
-        (s, [k, v]) => s.replace(new RegExp(`\\{${escapeRe(k)}\\}`, 'g'), () => v),
-        rawBody
-      )
-    : rawBody;
+  const fill = (text: string, params?: Record<string, string>) =>
+    params
+      ? Object.entries(params).reduce(
+          (s, [k, v]) => s.replace(new RegExp(`\\{${escapeRe(k)}\\}`, 'g'), () => v),
+          text
+        )
+      : text;
+  const body = fill(t(n.bodyKey), n.bodyParams);
   return {
     notice: n,
-    title: t(n.titleKey),
+    title: fill(t(n.titleKey), n.titleParams),
     body,
     ctaLabel: n.cta ? t(n.cta.labelKey) : null,
     secondaryCtaLabel: n.secondaryCta ? t(n.secondaryCta.labelKey) : null,

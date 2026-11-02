@@ -87,6 +87,9 @@ const system_notice: TranslationStrings = {
   'system_notice.pager.counter': '{current} / {total}',
   'system_notice.pager.goto': 'מעבר להודעה {n}',
   'system_notice.pager.position': 'הודעה {current} מתוך {total}',
+  'system_notice.fork_changelog.title': 'חדש ב-TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'הצג את כל השינויים',
 };
 
 export default system_notice;

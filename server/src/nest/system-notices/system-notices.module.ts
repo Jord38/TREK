@@ -4,6 +4,9 @@ import { UserNoticeDismissals } from '../../db/entities/UserNoticeDismissals.ent
 import { Users } from '../../db/entities/Users.entity';
 import { AddonsModule } from '../addons/addons.module';
 import { AppConfigModule } from '../app-config/app-config.module';
+import { SchedulingModule } from '../scheduling/scheduling.module';
+import { ForkChangelogController } from './fork-changelog.controller';
+import { ForkChangelogService } from './fork-changelog.service';
 import { SystemNoticesController } from './system-notices.controller';
 import { SystemNoticesService } from './system-notices.service';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
@@ -22,9 +25,10 @@ import { Module } from '@nestjs/common';
   imports: [
     AppConfigModule,
     AddonsModule,
+    SchedulingModule,
     MikroOrmModule.forFeature([Users, Trips, UserNoticeDismissals, AppSettings]),
   ],
-  controllers: [SystemNoticesController],
-  providers: [SystemNoticesService],
+  controllers: [SystemNoticesController, ForkChangelogController],
+  providers: [SystemNoticesService, ForkChangelogService],
 })
 export class SystemNoticesModule {}

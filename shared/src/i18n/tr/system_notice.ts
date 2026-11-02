@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
   'system_notice.release_notes.headline': 'Önce doğru yer.',
   'system_notice.release_notes.intro':
     "Yer arama, adres arama ve rota hesaplama artık dataforest cloud sponsorluğunda TREK'in kendi sunucularında çalışıyor ve her TREK, yerler hakkında bildiklerini diğer tüm TREK'lerle paylaşabiliyor.",
+  'system_notice.fork_changelog.title': "TREK'te yeni: {title}",
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Tüm değişiklikleri gör',
 };
 export default system_notice;

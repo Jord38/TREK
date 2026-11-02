@@ -86,5 +86,8 @@ const system_notice: TranslationStrings = {
     '場所の検索、住所の検索、ルート計算は TREK 自身のサーバーで動いていて、今は dataforest cloud に協賛してもらっています。私はそのために毎日奮闘しています。この形を守り続けるには、あなたの応援が必要です。',
   'system_notice.release_notes.cta_bmc': 'コーヒーをおごる',
   'system_notice.release_notes.cta_kofi': 'Ko-fiで応援する',
+  'system_notice.fork_changelog.title': 'TREKの新機能: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'すべての変更を見る',
 };
 export default system_notice;

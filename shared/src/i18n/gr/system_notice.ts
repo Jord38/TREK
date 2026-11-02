@@ -90,5 +90,8 @@ const system_notice: TranslationStrings = {
     'Η αναζήτηση τοποθεσιών, η αναζήτηση διευθύνσεων και η δρομολόγηση τρέχουν στους δικούς διακομιστές του TREK, σήμερα με χορηγία της dataforest cloud. Το παλεύω κάθε μέρα, και για να μείνει έτσι χρειάζομαι τη στήριξή σας.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Στηρίξτε στο Ko-fi',
+  'system_notice.fork_changelog.title': 'Νέο στο TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Δείτε όλες τις αλλαγές',
 };
 export default system_notice;

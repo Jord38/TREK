@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
   'system_notice.release_notes.cta_kofi': 'Dona suport a Ko-fi',
   'system_notice.release_notes.intro':
     'La cerca de llocs, la cerca d’adreces i el càlcul de rutes ara funcionen en servidors propis de TREK, patrocinats per dataforest cloud, i cada TREK pot compartir el que sap dels llocs amb tots els altres.',
+  'system_notice.fork_changelog.title': 'Novetat a TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Veure tots els canvis',
 };
 export default system_notice;

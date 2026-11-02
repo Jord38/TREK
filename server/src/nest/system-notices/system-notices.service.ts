@@ -7,6 +7,7 @@ import { TripsRepository } from '../../db/repositories/Trips.repository';
 import { UserNoticeDismissalsRepository } from '../../db/repositories/UserNoticeDismissals.repository';
 import { UsersRepository } from '../../db/repositories/Users.repository';
 import { evaluate } from '../../systemNotices/conditions';
+import { FORK_CHANGELOG_LIVE_KEY_PREFIX } from '../../systemNotices/fork-changelog';
 import { SYSTEM_NOTICES } from '../../systemNotices/registry';
 import { getCurrentAppVersion, isNoticeVersionActive, severityWeight } from '../../systemNotices/service';
 import type { SystemNotice } from '../../systemNotices/types';
@@ -130,18 +131,34 @@ export class SystemNoticesService {
       settingFlags.set(key, (await this.appSettings.getValue(key)) === 'true');
     }
 
+    // Same again for the times changelog entries went live.
+    const entryIds = [
+      ...new Set(
+        SYSTEM_NOTICES.flatMap((n) => n.conditions).flatMap((c) =>
+          c.kind === 'accountCreatedBeforeLive' ? [c.entryId] : [],
+        ),
+      ),
+    ];
+    const forkLiveSince = new Map<string, string | null>(
+      await Promise.all(
+        entryIds.map(async (id) => [id, await this.appSettings.getValue(FORK_CHANGELOG_LIVE_KEY_PREFIX + id)] as const),
+      ),
+    );
+
     const ctx = {
       user: {
         login_count: user.login_count,
         first_seen_version: user.first_seen_version,
         role: user.role,
         noTrips: tripCount,
+        created_at: user.created_at ?? null,
       },
       currentAppVersion,
       now,
       addonEnabled: (addonId: string) => addonFlags.get(addonId) ?? false,
       managed: this.env.isManaged(),
       settingFlag: (key: string) => settingFlags.get(key) ?? false,
+      forkLiveSince: (entryId: string) => forkLiveSince.get(entryId) ?? null,
     };
     // Full versions, the prerelease part included: a dismissal on 5.0.0-pre.2 is older
     // than 5.0.0, so whoever tried a prerelease still gets the notes of the release.

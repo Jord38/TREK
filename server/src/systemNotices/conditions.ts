@@ -3,7 +3,7 @@ import type { NoticeCondition, SystemNotice } from './types.js';
 import semver from 'semver';
 
 interface ConditionContext {
-  user: { login_count: number; first_seen_version: string; role: string; noTrips: number };
+  user: { login_count: number; first_seen_version: string; role: string; noTrips: number; created_at: string | null };
   currentAppVersion: string;
   now: Date;
   /**
@@ -25,12 +25,22 @@ interface ConditionContext {
    * this module stays free of any DB import either way.
    */
   settingFlag: (key: string) => boolean;
+  /** ISO time a changelog entry first went live on this server, resolved up front like settingFlag. */
+  forkLiveSince: (entryId: string) => string | null;
 }
 
 // Custom predicate registry — extensible without modifying this file
 const customPredicates = new Map<string, (ctx: ConditionContext) => boolean>();
 export function registerPredicate(id: string, fn: (ctx: ConditionContext) => boolean): void {
   customPredicates.set(id, fn);
+}
+
+/** SQLite stores CURRENT_TIMESTAMP as 'YYYY-MM-DD HH:MM:SS' in UTC, without a zone. */
+function parseCreatedAt(value: string | null): number | null {
+  if (!value) return null;
+  const iso = value.replace(' ', 'T');
+  const parsed = Date.parse(/(Z|[+-]\d{2}:?\d{2})$/i.test(iso) ? iso : `${iso}Z`);
+  return Number.isNaN(parsed) ? null : parsed;
 }
 
 function evaluateOne(condition: NoticeCondition, ctx: ConditionContext): boolean {
@@ -65,6 +75,14 @@ function evaluateOne(condition: NoticeCondition, ctx: ConditionContext): boolean
 
     case 'addonEnabled':
       return ctx.addonEnabled(condition.addonId);
+
+    case 'accountCreatedBeforeLive': {
+      const live = Date.parse(ctx.forkLiveSince(condition.entryId) ?? '');
+      if (Number.isNaN(live)) return false;
+      const created = parseCreatedAt(ctx.user.created_at);
+      // An account without a creation time predates the column's default, so it counts as old.
+      return created === null || created < live;
+    }
 
     case 'managed':
       return ctx.managed === condition.is;

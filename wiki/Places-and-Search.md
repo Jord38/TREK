@@ -330,7 +330,21 @@ In the installed app the map app takes over the current window rather than a new
 The import button in the places column (*Import Places*) offers two ways:
 
 - **Import file** takes a `.gpx`, `.kml` or `.kmz` file, from tools like Google My Maps, Google Earth or a GPS tracker. Pick the file or drop it on the dialog, then choose what to import: **Waypoints**, **Routes** and **Tracks (with path geometry)** for GPX, **Points (Placemarks)** and **Paths (LineStrings)** for KML and KMZ. Dropping a file straight onto the places column opens the same dialog with it.
-- **List Import** reads a shared list. Both Google Maps and Naver Maps list URLs are supported, with a **Provider** switch when both are available, and a shared Google Maps directions link works too: its stops become places, in driving order. Stops a route gives only by name are looked up through the TREK API first.
+- **List Import** reads a shared list. Both Google Maps and Naver Maps list URLs are supported, with a **Provider** switch when both are available, and a shared Google Maps directions link works too: its stops become places, in driving order. Stops a route gives only by name are looked up through the TREK API first. A Google list shows a [preview](#previewing-a-google-list) first; Naver lists and directions links import directly.
+
+### Previewing a Google list
+
+A shared Google Maps list opens a preview first, and nothing is added to the trip until you press **Import**. The Naver list, a Google directions link and the file import skip the preview and import straight away, as before.
+
+The preview reads the list name and the number of places, then groups the places by country, taken from each place's location. Country chips show the count per country, with **Other** for places outside every country. Pick the countries you want; the places of the countries you leave out are not imported. Each picked country's places fall into three groups:
+
+- **To check**: places that look like one you already have but are not certain, for example the same name some distance away, or a similar name close by. A line says what it was matched with. They are left out unless you tick them.
+- **New**: places the trip does not have yet. They start ticked; untick the ones you do not want.
+- **Already in your trip**: places the trip has already. They are not imported again, and each gets Google's id attached, so the next import of the list recognises it exactly. The group starts closed.
+
+When a place in **To check** is your own pin lying off, **Use Google's location for mine** moves your place to the spot Google has, without adding a second one. The place then shows under **Already in your trip** with **Keep my pin** to take it back. Ticking a place to import it instead cancels the move.
+
+The **Import** button counts the ticked places, and the shared enrichment switch (see the admin note below) applies to them. An import can be undone with **Undo** in the days column, which removes only the places it created. Moved pins and attached ids stay.
 
 Imported tracks each get their own line colour so multiple routes stay apart on the map; you can override it per track in the place inspector. See [Map Features](Map-Features#gpx-tracks) for the details. An import can be undone with **Undo** in the days column.
 

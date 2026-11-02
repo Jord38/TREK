@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { placesApi } from '../../../../src/api/client'
+import { placeListImportApi } from '../../../../src/api/placeListImport'
 import { tourRepo } from '../../../../src/repo/tourRepo'
 import { useAddonStore } from '../../../../src/store/addonStore'
 import MImportSheet from '../../../../src/mobile/screens/trip/sheets/MImportSheet'
@@ -98,6 +99,7 @@ describe('MImportSheet', () => {
   })
 
   it('FE-MOB-IMPS-009: a finished list import closes the whole sheet', async () => {
+    vi.spyOn(placeListImportApi, 'previewGoogleList').mockResolvedValue({ kind: 'directions' })
     vi.spyOn(placesApi, 'importGoogleList').mockResolvedValue({ count: 2, skipped: 0, listName: 'L', places: [] })
     const { onClose } = renderSheet()
     fireEvent.click(menuRow('places.importList'))

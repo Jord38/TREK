@@ -4,7 +4,7 @@ import { useId, useState, type ReactNode } from 'react';
 
 import type { useTranslation } from '../../i18n';
 import { fs } from '../shared/DialogShell';
-import { formatListDistance } from './formatListDistance';
+import { matchReason } from './listPreviewReason';
 import type { useListImportPreview } from './useListImportPreview';
 
 type Translate = ReturnType<typeof useTranslation>['t'];
@@ -18,26 +18,6 @@ interface Props {
 
 const LINK_BUTTON = 'cursor-pointer border-0 bg-transparent p-0 text-start font-medium text-content underline';
 const CHIP = 'inline-flex items-center gap-1.5 rounded-full px-3 py-1 font-medium ring-1 ring-edge-faint';
-
-function matchReason(place: ListPreviewPlace, t: Translate, language: string): string | null {
-  const { match, hint } = place;
-  if (match) {
-    if (match.distanceM === null) return t('places.listPreview.matchedLinked', { name: match.name });
-    const distance = formatListDistance(match.distanceM, language);
-    if (place.bucket === 'existing') return t('places.listPreview.matched', { name: match.name, distance });
-    return t(match.reason === 'core-far' ? 'places.listPreview.sameNameFar' : 'places.listPreview.similar', {
-      name: match.name,
-      distance,
-    });
-  }
-  if (hint) {
-    return t(hint.kind === 'same-name-far' ? 'places.listPreview.hintSameNameFar' : 'places.listPreview.hintNextTo', {
-      name: hint.name,
-      distance: formatListDistance(hint.distanceM, language),
-    });
-  }
-  return null;
-}
 
 function Group({
   title,

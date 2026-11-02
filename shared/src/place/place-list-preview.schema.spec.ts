@@ -1,4 +1,4 @@
-import { placeListPreviewResponseSchema } from './place-list-preview.schema';
+import { placeListCommitRequestSchema, placeListPreviewResponseSchema } from './place-list-preview.schema';
 
 import { describe, it, expect } from 'vitest';
 
@@ -40,6 +40,28 @@ describe('placeListPreviewResponseSchema', () => {
       kind: 'list',
       listName: 'Eats',
       places: [{ ...base, bucket: 'maybe', match: null, hint: null }],
+    });
+    expect(res.success).toBe(false);
+  });
+});
+
+describe('placeListCommitRequestSchema', () => {
+  it('accepts no places with one link', () => {
+    const res = placeListCommitRequestSchema.safeParse({
+      listName: 'Eats',
+      places: [],
+      link: [{ placeId: 3, googleFtid: '0x1:0x2' }],
+      movePin: [],
+    });
+    expect(res.success).toBe(true);
+  });
+
+  it('rejects a link without a Google id', () => {
+    const res = placeListCommitRequestSchema.safeParse({
+      listName: 'Eats',
+      places: [],
+      link: [{ placeId: 3, googleFtid: '' }],
+      movePin: [],
     });
     expect(res.success).toBe(false);
   });

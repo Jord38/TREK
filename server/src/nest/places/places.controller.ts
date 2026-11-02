@@ -12,6 +12,7 @@ import { isDirectionsUrl, isGoogleListDataUrl } from '../place-import/place-impo
 import { StorageService } from '../storage/storage.service';
 import { placeImageUrl } from './place-image';
 import { TrackPlaceOrigins } from './place-origins.interceptor';
+import { PlacesListImportService } from './places-list-import.service';
 import { PlacesListPreviewService } from './places-list-preview.service';
 import {
   PlaceBulkDeleteDto,
@@ -20,6 +21,7 @@ import {
   PlaceExportGpxDto,
   PlaceImportGpxDto,
   PlaceImportListDto,
+  PlaceListCommitDto,
   PlaceListPreviewDto,
   PlaceImportMapDto,
   PlaceRatingDto,
@@ -46,7 +48,13 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { hexColorSchema, placeImageUrlSchema, placeListPreviewResponseSchema, placeWebsiteSchema } from '@trek/shared';
+import {
+  hexColorSchema,
+  placeImageUrlSchema,
+  placeListCommitResponseSchema,
+  placeListPreviewResponseSchema,
+  placeWebsiteSchema,
+} from '@trek/shared';
 
 import type { Response } from 'express';
 import { memoryStorage } from 'multer';
@@ -134,6 +142,7 @@ export class PlacesController {
 
   // Property injection keeps the constructor the unit tests build by hand.
   @Inject(PlacesListPreviewService) private readonly listPreview!: PlacesListPreviewService;
+  @Inject(PlacesListImportService) private readonly listImport!: PlacesListImportService;
 
   private async requireTrip(tripId: string, user: User) {
     const trip = await this.places.verifyTripAccess(tripId, user.id);
@@ -306,6 +315,20 @@ export class PlacesController {
     const trip = await this.requireTrip(tripId, user);
     await this.requireEdit(trip, user);
     return this.listPreview.previewGoogleList(tripId, body.url);
+  }
+
+  @Post('import/google-list/commit')
+  @TrackPlaceOrigins('import')
+  @ResponseContract(placeListCommitResponseSchema)
+  async commitGoogle(
+    @CurrentUser() user: User,
+    @Param('tripId') tripId: string,
+    @Body() body: PlaceListCommitDto,
+    @Headers('x-socket-id') socketId?: string,
+  ) {
+    const trip = await this.requireTrip(tripId, user);
+    await this.requireEdit(trip, user);
+    return this.listImport.commitGoogleList(trip.tid, body, { userId: user.id, socketId });
   }
 
   @Post('import/naver-list')

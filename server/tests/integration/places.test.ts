@@ -1088,6 +1088,60 @@ describe('PLACE-028 — POST /import/google-list/preview', () => {
   });
 });
 
+describe('PLACE-029 — POST /import/google-list/commit', () => {
+  const commitUrl = (tripId: number) => `/api/trips/${tripId}/places/import/google-list/commit`;
+  const body = { listName: 'Eats', places: [], link: [], movePin: [] };
+
+  it('PLACE-029a — unauthenticated returns 401', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const res = await request(app).post(commitUrl(trip.id)).send(body);
+    expect(res.status).toBe(401);
+  });
+
+  it('PLACE-029b — a member without edit rights gets 403', async () => {
+    const { user: owner } = createUser(testDb);
+    const { user: member } = createUser(testDb);
+    const trip = createTrip(testDb, owner.id);
+    addTripMember(testDb, trip.id, member.id);
+    await setAppSetting(orm, 'perm_place_edit', 'trip_owner');
+    await invalidatePermissionsCache();
+    const res = await request(app).post(commitUrl(trip.id)).set('Cookie', authCookie(member.id)).send(body);
+    expect(res.status).toBe(403);
+  });
+
+  it('PLACE-029c — an editor gets 201 with the counts and the new places stored', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const bare = createPlace(testDb, trip.id, { name: 'Bare' });
+    const res = await request(app)
+      .post(commitUrl(trip.id))
+      .set('Cookie', authCookie(user.id))
+      .send({
+        ...body,
+        places: [{ name: 'Ramen House', lat: 35.6595, lng: 139.7005, notes: null, googleFtid: '0x1:0x2' }],
+        link: [{ placeId: bare.id, googleFtid: '0x3:0x4' }],
+        movePin: [{ placeId: 999999, lat: 1, lng: 1, googleFtid: null }],
+      });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({ count: 1, listName: 'Eats', linked: 1, moved: 0, stale: 1 });
+    expect(res.body.places[0].name).toBe('Ramen House');
+    expect(await countRows(orm, Places, { trip: trip.id })).toBe(2);
+  });
+
+  it('PLACE-029d — no places with one link is valid and returns count 0, linked 1', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const bare = createPlace(testDb, trip.id, { name: 'Bare' });
+    const res = await request(app)
+      .post(commitUrl(trip.id))
+      .set('Cookie', authCookie(user.id))
+      .send({ ...body, link: [{ placeId: bare.id, googleFtid: '0x3:0x4' }] });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({ places: [], count: 0, linked: 1 });
+  });
+});
+
 // ─────────────────────────────────────────────────────────────────────────────
 // H1 (task-4-review.md) — the trip id is parsed ONCE, at the gate, and that
 // value is what every later call uses (rule 21). A hex-spelled trip id whose

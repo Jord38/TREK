@@ -5,6 +5,7 @@ import {
   placeImportGpxRequestSchema,
   placeImportListRequestSchema,
   placeImportMapRequestSchema,
+  placeListCommitRequestSchema,
   placeListPreviewRequestSchema,
   placeExportGpxRequestSchema,
   placeRatingRequestSchema,
@@ -38,4 +39,5 @@ export class PlaceImportListDto extends createZodDto(placeImportListRequestSchem
 export class PlaceImportGpxDto extends createZodDto(placeImportGpxRequestSchema) {}
 export class PlaceImportMapDto extends createZodDto(placeImportMapRequestSchema) {}
 export class PlaceExportGpxDto extends createZodDto(placeExportGpxRequestSchema) {}
+export class PlaceListCommitDto extends createZodDto(placeListCommitRequestSchema) {}
 export class PlaceListPreviewDto extends createZodDto(placeListPreviewRequestSchema) {}

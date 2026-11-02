@@ -1,3 +1,5 @@
+import { placeSchema } from './place.schema';
+
 import { z } from 'zod';
 
 /**
@@ -60,3 +62,41 @@ export const placeListPreviewResponseSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('directions') }),
 ]);
 export type PlaceListPreviewResponse = z.infer<typeof placeListPreviewResponseSchema>;
+
+const commitPlaceSchema = z.object({
+  name: z.string().min(1),
+  lat: z.number(),
+  lng: z.number(),
+  notes: z.string().nullable(),
+  googleFtid: z.string().nullable(),
+});
+
+/** What the preview's Import sends back: the ticked places, the matches to link, the pins to move. */
+export const placeListCommitRequestSchema = z.object({
+  listName: z.string(),
+  enrich: z.boolean().optional(),
+  places: z.array(commitPlaceSchema),
+  /** Existing places that receive the Google id of the list place they matched. */
+  link: z.array(z.object({ placeId: z.number().int(), googleFtid: z.string().min(1) })),
+  /** Existing places whose pin moves to Google's location. */
+  movePin: z.array(
+    z.object({
+      placeId: z.number().int(),
+      lat: z.number(),
+      lng: z.number(),
+      googleFtid: z.string().nullable(),
+    }),
+  ),
+});
+export type PlaceListCommitRequest = z.infer<typeof placeListCommitRequestSchema>;
+
+export const placeListCommitResponseSchema = z.object({
+  places: z.array(placeSchema),
+  count: z.number().int(),
+  listName: z.string(),
+  linked: z.number().int(),
+  moved: z.number().int(),
+  /** Link or pin-move targets that were gone or belong to another trip. */
+  stale: z.number().int(),
+});
+export type PlaceListCommitResponse = z.infer<typeof placeListCommitResponseSchema>;

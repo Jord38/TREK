@@ -33,6 +33,18 @@ describe('systemNoticeDtoSchema', () => {
     ).toBe(true);
   });
 
+  it('accepts video media and refuses an unknown media kind', () => {
+    const notice = { id: 'w', display: 'modal', severity: 'info', titleKey: 't', bodyKey: 'b', dismissible: true };
+    expect(
+      systemNoticeDtoSchema.safeParse({ ...notice, media: { kind: 'video', src: '/media/tour.mp4', altKey: 'alt' } })
+        .success,
+    ).toBe(true);
+    expect(
+      systemNoticeDtoSchema.safeParse({ ...notice, media: { kind: 'gif', src: '/media/tour.gif', altKey: 'alt' } })
+        .success,
+    ).toBe(false);
+  });
+
   it('accepts an action CTA with the discriminated-union shape', () => {
     expect(
       systemNoticeDtoSchema.safeParse({

@@ -11,6 +11,11 @@ const system_notice: TranslationStrings = {
   'system_notice.welcome_v1.highlight_offline': 'Werkt offline op mobiel',
   'system_notice.dev_test_modal.title': '[Dev] Testmelding',
   'system_notice.dev_test_modal.body': 'Dit is een testmelding alleen voor ontwikkelaars.',
+  'system_notice.welcome_tour.title': 'Welkom bij TREK',
+  'system_notice.welcome_tour.body':
+    'Een rondleiding van twee minuten door TREK: vluchten en treinen op één tijdlijn, wandelingen op een topokaart, fotoboeken, gedeelde kosten en plannen met je AI.',
+  'system_notice.welcome_tour.video_label': 'Een rondleiding door TREK',
+  'system_notice.welcome_tour.cta': 'Plan je eerste reis',
   'system_notice.thank_you_support.title': 'Bedankt voor het gebruik van TREK',
   'system_notice.thank_you_support.body':
     'Even een kort bedankje dat je TREK hebt geïnstalleerd — het betekent echt veel voor me.\n\nIk ben een solo-ontwikkelaar en bouw TREK in mijn vrije tijd. Het begon als een klein hulpmiddel voor mijn eigen reizen, en ik ben oprecht overweldigd door de steun en de interesse vanuit de community sindsdien. TREK is met heel veel hart gemaakt aan mijn kant — maar ook dankzij de vele geweldige externe bijdragers die hebben geholpen het vorm te geven.\n\n**TREK is open source en volledig gratis — en dat zal het voor altijd blijven. Geen betaalde versies, geen abonnementen, geen addertjes onder het gras. Dat beloof ik.**\n\nAls TREK nuttig voor je is en je de ontwikkeling ervan wilt steunen, helpt een klein kopje koffie me oprecht om te blijven bouwen — absoluut geen druk, maar elk kopje houdt de late avonden gaande.\n\nBedankt dat je er bent.\n\n— Maurice',

@@ -18,6 +18,7 @@ export const noticeDisplaySchema = z.enum(['modal', 'banner', 'toast']);
 export const noticeSeveritySchema = z.enum(['info', 'warn', 'critical']);
 
 const noticeMediaSchema = z.object({
+  kind: z.enum(['image', 'video']).optional(),
   src: z.string(),
   srcDark: z.string().optional(),
   altKey: z.string(),

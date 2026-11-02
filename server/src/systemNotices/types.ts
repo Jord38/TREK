@@ -16,6 +16,8 @@ export type NoticeCondition =
   | { kind: 'custom'; id: string };
 
 export interface NoticeMedia {
+  /** Defaults to an image. A video plays with controls, never on its own. */
+  kind?: 'image' | 'video';
   src: string;
   srcDark?: string;
   altKey: string;

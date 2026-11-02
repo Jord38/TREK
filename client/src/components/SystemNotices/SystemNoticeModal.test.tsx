@@ -310,6 +310,29 @@ describe('ModalRenderer', () => {
     expect(screen.getByText('Version 4.0.0 ($&) is here')).toBeTruthy();
   });
 
+  it('FE-SN-MODAL-058: video media plays in the hero with controls, never autoplaying with sound', async () => {
+    const notice = makeNotice({ media: { kind: 'video', src: '/media/tour.mp4', altKey: 'Tour of TREK' } });
+    const { container } = render(<ModalRenderer notices={[notice]} />);
+    await flushGraceDelay();
+
+    const video = container.querySelector('video');
+    expect(video).not.toBeNull();
+    expect(video?.getAttribute('src')).toBe('/media/tour.mp4');
+    expect(video?.hasAttribute('controls')).toBe(true);
+    expect(video?.hasAttribute('autoplay')).toBe(false);
+    expect(video?.getAttribute('aria-label')).toBe('Tour of TREK');
+    expect(container.querySelector('img')).toBeNull();
+  });
+
+  it('FE-SN-MODAL-059: media without a kind still renders as an image', async () => {
+    const notice = makeNotice({ media: { src: '/img.png', altKey: 'A picture' } });
+    const { container } = render(<ModalRenderer notices={[notice]} />);
+    await flushGraceDelay();
+
+    expect(container.querySelector('img')?.getAttribute('src')).toBe('/img.png');
+    expect(container.querySelector('video')).toBeNull();
+  });
+
   it('FE-SN-MODAL-008: empty notices renders nothing', () => {
     const { container } = render(<ModalRenderer notices={[]} />);
     expect(container.firstChild).toBeNull();

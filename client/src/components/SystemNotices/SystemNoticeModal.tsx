@@ -10,6 +10,7 @@ import type { SystemNoticeDTO } from '../../store/systemNoticeStore.js';
 import { useTranslation, isRtlLanguage } from '../../i18n/index.js';
 import { runNoticeAction } from './noticeActions.js';
 import { ReleaseNoticeModal } from './ReleaseNoticeModal.js';
+import { NoticeMediaView } from './NoticeMediaView.js';
 import { lockBodyScroll } from '../../utils/bodyScrollLock.js';
 
 const ReactMarkdown = React.lazy(() =>
@@ -125,14 +126,7 @@ function NoticeContent({ notice, title, body, ctaLabel, secondaryCtaLabel, title
             className="w-full overflow-hidden"
             style={{ aspectRatio: notice.media.aspectRatio ?? '16/9' }}
           >
-            <img
-              src={isDark && notice.media.srcDark ? notice.media.srcDark : notice.media.src}
-              alt={t(notice.media.altKey)}
-              className="w-full h-full object-cover"
-              fetchPriority="high"
-              decoding="async"
-              onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-            />
+            <NoticeMediaView media={notice.media} isDark={isDark} label={t(notice.media.altKey)} hero />
           </div>
         )}
 
@@ -213,13 +207,7 @@ function NoticeContent({ notice, title, body, ctaLabel, secondaryCtaLabel, title
               className="w-full overflow-hidden rounded-lg mb-4 mx-auto"
               style={{ aspectRatio: notice.media.aspectRatio ?? '16/9' }}
             >
-              <img
-                src={isDark && notice.media.srcDark ? notice.media.srcDark : notice.media.src}
-                alt={t(notice.media.altKey)}
-                className="w-full h-full object-cover"
-                decoding="async"
-                onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }}
-              />
+              <NoticeMediaView media={notice.media} isDark={isDark} label={t(notice.media.altKey)} />
             </div>
           )}
 

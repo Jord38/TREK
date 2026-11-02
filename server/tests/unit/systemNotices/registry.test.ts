@@ -1,5 +1,6 @@
 import { RETIRED_NOTICE_IDS, SYSTEM_NOTICES } from '../../../src/systemNotices/registry.js';
 import { isNoticeVersionActive } from '../../../src/systemNotices/service.js';
+import { evaluate } from '../../../src/systemNotices/conditions.js';
 
 import fs from 'node:fs';
 import path from 'node:path';
@@ -83,6 +84,27 @@ describe('registry integrity', () => {
     // The window alone is not enough: a one-time dismissal would retire it for good
     // the first time somebody closed it.
     expect(release!.recurring).toBe('per-version');
+  });
+
+  it('the welcome tour plays the intro video to a new user on their first login only', () => {
+    const welcome = SYSTEM_NOTICES.find((n) => n.id === 'welcome-tour');
+    expect(welcome).toBeDefined();
+    expect(welcome!.display).toBe('modal');
+    expect(welcome!.media).toMatchObject({ kind: 'video', src: '/media/trek-intro.mp4' });
+    expect(welcome!.recurring).toBeUndefined();
+    const ctx = (login_count: number) => ({
+      user: { login_count, first_seen_version: '5.1.0', role: 'user', noTrips: 0 },
+      currentAppVersion: '5.1.0',
+      now: new Date('2026-11-02T12:00:00Z'),
+      addonEnabled: () => false,
+      managed: false,
+      settingFlag: () => false,
+    });
+    expect(evaluate(welcome!, ctx(1))).toBe(true);
+    expect(evaluate(welcome!, ctx(2))).toBe(false);
+    // Ahead of the release notes, so a new user meets the tour first.
+    const release = SYSTEM_NOTICES.find((n) => n.id === 'release-notes');
+    expect(welcome!.priority!).toBeGreaterThan(release!.priority!);
   });
 
   it('the 4.0.0 release notice is retired and its id stays reserved', () => {

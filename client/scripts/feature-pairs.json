@@ -406,7 +406,7 @@
     },
     {
       "feature": "Google shared-list import preview",
-      "hooks": ["src/components/Planner/useListImportPreview.ts"],
+      "hooks": ["src/components/Planner/useListPreviewView.ts"],
       "desktop": ["src/components/Planner/PlacesSidebarListImportModal.tsx"],
       "mobile": ["src/mobile/screens/trip/sheets/ImpListPreview.tsx"]
     },

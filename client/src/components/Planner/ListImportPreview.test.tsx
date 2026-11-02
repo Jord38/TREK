@@ -1,9 +1,10 @@
-// FE-PLANNER-LISTVIEW-001 to FE-PLANNER-LISTVIEW-012: the previewed Google list in the import dialog.
+// FE-PLANNER-LISTVIEW-001 to FE-PLANNER-LISTVIEW-013: the previewed Google list in the import dialog.
 import type { ListPreviewPlace } from '@trek/shared';
 import { fireEvent, render, screen, within } from '../../../tests/helpers/render';
 import { useTranslation } from '../../i18n';
 import ListImportPreview from './ListImportPreview';
-import { useListImportPreview, type ListPreviewData } from './useListImportPreview';
+import type { ListPreviewData } from './useListImportPreview';
+import { useListPreviewView } from './useListPreviewView';
 
 function row(key: string, over: Partial<ListPreviewPlace> = {}): ListPreviewPlace {
   return {
@@ -41,13 +42,18 @@ const places = [
   row('4', { name: 'Black Forest Hut', country: 'DE' }),
   row('5', { name: 'Odd Spot', country: null }),
   row('6', { name: 'Lone Check', bucket: 'check', match: null }),
+  row('7', {
+    name: 'Round Two Arena Annex',
+    bucket: 'new',
+    hint: { kind: 'similar-nearby', placeId: 14, name: 'Round Two', distanceM: 200 },
+  }),
 ];
 const data: ListPreviewData = { kind: 'list', listName: 'Weekend', places };
 
 function Harness() {
   const { t, language } = useTranslation();
-  const preview = useListImportPreview(data, language);
-  return <ListImportPreview preview={preview} t={t} language={language} />;
+  const view = useListPreviewView(data, language, t, { enrich: false, loading: false });
+  return <ListImportPreview view={view} t={t} language={language} />;
 }
 
 const chip = (name: RegExp) => screen.getByRole('button', { name });
@@ -57,7 +63,7 @@ const headings = () => screen.getAllByRole('heading').map((h) => h.textContent);
 describe('ListImportPreview', () => {
   it('FE-PLANNER-LISTVIEW-001: country chips show the name and count, no country is selected', () => {
     render(<Harness />);
-    expect(chip(/Netherlands/)).toHaveTextContent('5');
+    expect(chip(/Netherlands/)).toHaveTextContent('6');
     expect(chip(/Germany/)).toHaveTextContent('1');
     expect(chip(/Other/)).toHaveTextContent('1');
     expect(chip(/Netherlands/)).toHaveAttribute('aria-pressed', 'false');
@@ -76,20 +82,20 @@ describe('ListImportPreview', () => {
   it('FE-PLANNER-LISTVIEW-003: the summary reads the counts for one country', () => {
     render(<Harness />);
     select(/Netherlands/);
-    expect(screen.getByText('5 in Netherlands · 2 new · 1 already in your trip · 2 to check')).toBeInTheDocument();
+    expect(screen.getByText('6 in Netherlands · 3 new · 1 already in your trip · 2 to check')).toBeInTheDocument();
   });
 
   it('FE-PLANNER-LISTVIEW-004: with several countries the summary names how many, not each', () => {
     render(<Harness />);
     select(/Netherlands/);
     select(/Germany/);
-    expect(screen.getByText('6 in 2 countries · 3 new · 1 already in your trip · 2 to check')).toBeInTheDocument();
+    expect(screen.getByText('7 in 2 countries · 4 new · 1 already in your trip · 2 to check')).toBeInTheDocument();
   });
 
   it('FE-PLANNER-LISTVIEW-005: the groups come as To check, New, Already in your trip', () => {
     render(<Harness />);
     select(/Netherlands/);
-    expect(headings()).toEqual(['To check · 2', 'New · 2', 'Already in your trip · 1']);
+    expect(headings()).toEqual(['To check · 2', 'New · 3', 'Already in your trip · 1']);
   });
 
   it('FE-PLANNER-LISTVIEW-006: Already in your trip stays collapsed until opened', () => {
@@ -129,30 +135,42 @@ describe('ListImportPreview', () => {
     expect(screen.getByText('Your trip has a "Tulip Hall", 400.0 km away. A different place?')).toBeInTheDocument();
   });
 
-  it('FE-PLANNER-LISTVIEW-010: the pin action shows only on to-check rows that have a match', () => {
+  it('FE-PLANNER-LISTVIEW-010: the pin action shows only on to-check rows that have a match, named after the place', () => {
     render(<Harness />);
     select(/Netherlands/);
-    expect(screen.getAllByRole('button', { name: "Use Google's location for mine" })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /^Use Google's location for mine/ })).toHaveLength(1);
     const withMatch = screen.getByText('Canal Lounge').closest('li') as HTMLElement;
-    expect(within(withMatch).getByRole('button', { name: "Use Google's location for mine" })).toBeInTheDocument();
+    expect(
+      within(withMatch).getByRole('button', { name: "Use Google's location for mine: Canal Lounge" })
+    ).toBeInTheDocument();
     const withoutMatch = screen.getByText('Lone Check').closest('li') as HTMLElement;
     expect(within(withoutMatch).queryByRole('button')).not.toBeInTheDocument();
   });
 
-  it("FE-PLANNER-LISTVIEW-011: using Google's location marks the row and moves it to Already in your trip, reversibly", () => {
+  it("FE-PLANNER-LISTVIEW-011: using Google's location moves the row into an opened Already group with focus on its way back", () => {
     render(<Harness />);
     select(/Netherlands/);
-    fireEvent.click(screen.getByRole('button', { name: "Use Google's location for mine" }));
-    expect(headings()).toEqual(['To check · 1', 'New · 2', 'Already in your trip · 2']);
-    fireEvent.click(screen.getByRole('button', { name: /Already in your trip/ }));
-    expect(screen.getByText("Your pin “Canal Lounge Centrum” will move to Google's location.")).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Keep my pin' }));
-    expect(headings()).toEqual(['To check · 2', 'New · 2', 'Already in your trip · 1']);
+    fireEvent.click(screen.getByRole('button', { name: "Use Google's location for mine: Canal Lounge" }));
+    expect(headings()).toEqual(['To check · 1', 'New · 3', 'Already in your trip · 2']);
+    expect(screen.getByRole('button', { name: /Already in your trip/ })).toHaveAttribute('aria-expanded', 'true');
+    expect(screen.getByText('Your pin "Canal Lounge Centrum" will move to Google\'s location.')).toBeInTheDocument();
+    const keep = screen.getByRole('button', { name: 'Keep my pin: Canal Lounge' });
+    expect(keep).toHaveFocus();
+    fireEvent.click(keep);
+    expect(headings()).toEqual(['To check · 2', 'New · 3', 'Already in your trip · 1']);
+    expect(screen.getByRole('button', { name: "Use Google's location for mine: Canal Lounge" })).toHaveFocus();
   });
 
   it('FE-PLANNER-LISTVIEW-012: with no country selected it asks to pick one', () => {
     render(<Harness />);
     expect(screen.getByText('Pick a country to see its places.')).toBeInTheDocument();
     expect(screen.queryByRole('heading')).not.toBeInTheDocument();
+  });
+
+  it('FE-PLANNER-LISTVIEW-013: a similar name nearby is a new row with its own hint', () => {
+    render(<Harness />);
+    select(/Netherlands/);
+    expect(screen.getByText('Similar name to your "Round Two", 200 m away. A different place?')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox', { name: 'Round Two Arena Annex' })).toBeChecked();
   });
 });

@@ -1,15 +1,15 @@
 import type { ListPreviewPlace } from '@trek/shared';
 import { ChevronRight } from 'lucide-react';
-import { useId, useState, type ReactNode } from 'react';
+import { useId, type ReactNode, type Ref } from 'react';
 import { matchReason } from '../../../../components/Planner/listPreviewReason';
 import type { useListImport } from '../../../../components/Planner/useListImport';
-import { useListImportPreview, type ListPreviewData } from '../../../../components/Planner/useListImportPreview';
+import type { ListPreviewData } from '../../../../components/Planner/useListImportPreview';
+import { useListPreviewView, type ListPreviewView } from '../../../../components/Planner/useListPreviewView';
 import MChip from '../../../components/MChip';
 import type { TripPlanner } from '../MTripShell';
 import { FormSheetFooter } from './PlSheetChrome';
 
 type Translate = TripPlanner['t'];
-type Preview = ReturnType<typeof useListImportPreview>;
 type Commit = ReturnType<typeof useListImport>['handleCommit'];
 
 function Group({
@@ -72,6 +72,7 @@ function Row({
   language,
   pinMove,
   onPinMove,
+  pinButtonRef,
 }: {
   place: ListPreviewPlace;
   checked: boolean;
@@ -80,6 +81,7 @@ function Row({
   language: string;
   pinMove: boolean;
   onPinMove: () => void;
+  pinButtonRef: Ref<HTMLButtonElement>;
 }) {
   const id = useId();
   const reason = pinMove
@@ -103,10 +105,11 @@ function Row({
         {reason && <div className="mt-[2px] font-geist text-caption leading-[1.4] text-m-muted">{reason}</div>}
         {(canMovePin || pinMove) && (
           <button
+            ref={pinButtonRef}
             type="button"
             onClick={onPinMove}
             aria-label={`${pinLabel}: ${place.name}`}
-            className="mt-1 py-1 text-start text-caption font-semibold text-m-ink underline"
+            className="mt-1 min-h-[32px] py-1 text-start text-caption font-semibold text-m-ink underline"
           >
             {pinLabel}
           </button>
@@ -116,39 +119,12 @@ function Row({
   );
 }
 
-function PreviewBody({ preview, t, language }: { preview: Preview; t: Translate; language: string }) {
-  const [existingOpen, setExistingOpen] = useState(false);
-  const { countries, selectedCountries, toggleCountry, rows, ticked, toggle, pinMoves, togglePinMove, counts } =
-    preview;
-  const countryName = (name: string | null) => name ?? t('places.listPreview.other');
-  const selected = countries.filter((c) => selectedCountries.has(c.code));
-  const summary = [
-    selected.length === 1
-      ? t('places.listPreview.inCountry', { total: counts.inCountries, country: countryName(selected[0].name) })
-      : t('places.listPreview.inCountries', { places: counts.inCountries, count: selected.length }),
-    t('places.listPreview.summaryNew', { total: counts.new }),
-    t('places.listPreview.summaryExisting', { total: counts.existing }),
-    t('places.listPreview.summaryCheck', { total: counts.check }),
-  ].join(' · ');
+function PreviewBody({ view, t, language }: { view: ListPreviewView; t: Translate; language: string }) {
+  const { preview, selected, countryName, summary, existingOpen, toggleExisting, rowProps } = view;
+  const { countries, selectedCountries, toggleCountry, rows } = preview;
 
-  // A moved pin leaves "To check" for the Already group: open it so the row stays in sight.
-  const movePin = (key: string) => {
-    if (!pinMoves.has(key)) setExistingOpen(true);
-    togglePinMove(key);
-  };
   const renderRows = (places: ListPreviewPlace[]) =>
-    places.map((place) => (
-      <Row
-        key={place.key}
-        place={place}
-        checked={ticked.has(place.key)}
-        onToggle={() => toggle(place.key)}
-        t={t}
-        language={language}
-        pinMove={pinMoves.has(place.key)}
-        onPinMove={() => movePin(place.key)}
-      />
-    ));
+    places.map((place) => <Row key={place.key} place={place} t={t} language={language} {...rowProps(place)} />);
 
   return (
     <div className="flex flex-col gap-4">
@@ -188,7 +164,7 @@ function PreviewBody({ preview, t, language }: { preview: Preview; t: Translate;
               title={t('places.listPreview.groupExisting', { total: rows.existing.length })}
               hint={t('places.listPreview.existingHint')}
               collapsed={!existingOpen}
-              onToggle={() => setExistingOpen(!existingOpen)}
+              onToggle={toggleExisting}
             >
               {renderRows(rows.existing)}
             </Group>
@@ -222,15 +198,7 @@ export default function ImpListPreview({
   onCommit,
   children,
 }: ImpListPreviewProps) {
-  const preview = useListImportPreview(data, language);
-  const commit = preview.toCommit(data.listName, enrich);
-  // A link-only commit (ids to attach, pins to move) is a valid import with no place ticked.
-  const nothingToCommit = preview.counts.toImport === 0 && commit.link.length === 0 && commit.movePin.length === 0;
-  const submitLabel = loading
-    ? t('common.loading')
-    : preview.counts.toImport > 0
-      ? t('places.listPreview.import', { count: preview.counts.toImport })
-      : t('common.import');
+  const view = useListPreviewView(data, language, t, { enrich, loading });
 
   return (
     <>
@@ -238,15 +206,15 @@ export default function ImpListPreview({
         <p className="m-0 text-body font-semibold text-m-ink">
           {t('places.listPreview.listInfo', { list: data.listName, count: data.places.length })}
         </p>
-        <PreviewBody preview={preview} t={t} language={language} />
+        <PreviewBody view={view} t={t} language={language} />
         {children}
       </div>
       <FormSheetFooter
         onCancel={onBack}
         cancelLabel={t('common.back')}
-        onSubmit={() => void onCommit(commit)}
-        submitLabel={submitLabel}
-        submitDisabled={loading || nothingToCommit}
+        onSubmit={() => void onCommit(view.commit)}
+        submitLabel={view.submitLabel}
+        submitDisabled={view.submitDisabled}
       />
     </>
   );

@@ -287,16 +287,20 @@ describe('ImpListStep', () => {
       expect(planner.pushUndo).toHaveBeenCalledWith('undo.importGoogleList', expect.any(Function))
     })
 
-    it('FE-MOB-IMPL-021: moving a pin names the place in its button, keeps the row visible and commits the move', async () => {
+    it('FE-MOB-IMPL-021: moving a pin names the place in its button, opens Already with focus on the row and commits the move', async () => {
       vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
         count: 0, linked: 0, moved: 1, listName: 'Weekend', places: [],
       } as never)
       const { onDone } = await openPreview()
       pickNl()
-      fireEvent.click(screen.getByRole('button', { name: /places\.listPreview\.usePin.*Canal Lounge/ }))
+      const usePin = screen.getByRole('button', { name: /places\.listPreview\.usePin.*Canal Lounge/ })
+      // A tap target as tall as the other phone controls.
+      expect(usePin.className).toContain('min-h-[32px]')
+      fireEvent.click(usePin)
 
+      expect(screen.getByRole('button', { name: /places\.listPreview\.groupExisting/ })).toHaveAttribute('aria-expanded', 'true')
       expect(screen.getByText('places.listPreview.pinWillMove:Canal Lounge Centrum')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /places\.listPreview\.keepPin.*Canal Lounge/ })).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /places\.listPreview\.keepPin.*Canal Lounge/ })).toHaveFocus()
       fireEvent.click(screen.getByRole('button', { name: 'places.listPreview.import:1' }))
       await waitFor(() => expect(onDone).toHaveBeenCalled())
       expect(vi.mocked(placeListImportApi.commitGoogleList).mock.calls[0][1].movePin).toEqual([

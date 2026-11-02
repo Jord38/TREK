@@ -1,17 +1,16 @@
 import type { ListPreviewPlace } from '@trek/shared';
 import { ChevronRight } from 'lucide-react';
-import { useId, useState, type ReactNode } from 'react';
+import { useId, type ReactNode, type Ref } from 'react';
 
 import type { useTranslation } from '../../i18n';
 import { fs } from '../shared/DialogShell';
 import { matchReason } from './listPreviewReason';
-import type { useListImportPreview } from './useListImportPreview';
+import type { ListPreviewView } from './useListPreviewView';
 
 type Translate = ReturnType<typeof useTranslation>['t'];
-type Preview = ReturnType<typeof useListImportPreview>;
 
 interface Props {
-  preview: Preview;
+  view: ListPreviewView;
   t: Translate;
   language: string;
 }
@@ -78,6 +77,7 @@ function Row({
   language,
   pinMove,
   onPinMove,
+  pinButtonRef,
 }: {
   place: ListPreviewPlace;
   checked: boolean;
@@ -87,12 +87,14 @@ function Row({
   /** The row's existing place gets its pin moved: the reason line says so, with the way back. */
   pinMove: boolean;
   onPinMove: () => void;
+  pinButtonRef: Ref<HTMLButtonElement>;
 }) {
   const id = useId();
   const reason = pinMove
     ? t('places.listPreview.pinWillMove', { name: place.match?.name ?? '' })
     : matchReason(place, t, language);
   const canMovePin = place.bucket === 'check' && !!place.match && !pinMove;
+  const pinLabel = t(pinMove ? 'places.listPreview.keepPin' : 'places.listPreview.usePin');
   return (
     <li className="flex items-start gap-2.5 px-3 py-2">
       <input id={id} type="checkbox" checked={checked} onChange={onToggle} className="mt-0.5 flex-none accent-accent" />
@@ -110,8 +112,15 @@ function Row({
           </div>
         )}
         {(canMovePin || pinMove) && (
-          <button type="button" onClick={onPinMove} className={`${LINK_BUTTON} mt-1`} style={fs(12, 'body')}>
-            {t(pinMove ? 'places.listPreview.keepPin' : 'places.listPreview.usePin')}
+          <button
+            ref={pinButtonRef}
+            type="button"
+            onClick={onPinMove}
+            aria-label={`${pinLabel}: ${place.name}`}
+            className={`${LINK_BUTTON} mt-1`}
+            style={fs(12, 'body')}
+          >
+            {pinLabel}
           </button>
         )}
       </div>
@@ -120,35 +129,12 @@ function Row({
 }
 
 /** The previewed Google list: country chips, a summary and the three groups of places with their ticks. */
-export default function ListImportPreview({ preview, t, language }: Props) {
-  const [existingOpen, setExistingOpen] = useState(false);
-  const { countries, selectedCountries, toggleCountry, rows, ticked, toggle, pinMoves, togglePinMove, counts } =
-    preview;
-
-  const countryName = (name: string | null) => name ?? t('places.listPreview.other');
-  const selected = countries.filter((c) => selectedCountries.has(c.code));
-  const summary = [
-    selected.length === 1
-      ? t('places.listPreview.inCountry', { total: counts.inCountries, country: countryName(selected[0].name) })
-      : t('places.listPreview.inCountries', { places: counts.inCountries, count: selected.length }),
-    t('places.listPreview.summaryNew', { total: counts.new }),
-    t('places.listPreview.summaryExisting', { total: counts.existing }),
-    t('places.listPreview.summaryCheck', { total: counts.check }),
-  ].join(' · ');
+export default function ListImportPreview({ view, t, language }: Props) {
+  const { preview, selected, countryName, summary, existingOpen, toggleExisting, rowProps } = view;
+  const { countries, selectedCountries, toggleCountry, rows } = preview;
 
   const renderRows = (places: ListPreviewPlace[]) =>
-    places.map((place) => (
-      <Row
-        key={place.key}
-        place={place}
-        checked={ticked.has(place.key)}
-        onToggle={() => toggle(place.key)}
-        t={t}
-        language={language}
-        pinMove={pinMoves.has(place.key)}
-        onPinMove={() => togglePinMove(place.key)}
-      />
-    ));
+    places.map((place) => <Row key={place.key} place={place} t={t} language={language} {...rowProps(place)} />);
 
   return (
     <div className="flex flex-col gap-4">
@@ -200,7 +186,7 @@ export default function ListImportPreview({ preview, t, language }: Props) {
               tone="plain"
               hint={t('places.listPreview.existingHint')}
               collapsed={!existingOpen}
-              onToggle={() => setExistingOpen(!existingOpen)}
+              onToggle={toggleExisting}
             >
               {renderRows(rows.existing)}
             </Group>

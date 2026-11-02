@@ -4,7 +4,7 @@ import ToggleSwitch from '../Settings/ToggleSwitch'
 import { DialogButton, DialogFooter, DialogHeader, DialogShell, DialogTile, FooterSpacer, NEUTRAL_TINT, fs } from '../shared/DialogShell'
 import { EditorField, INPUT, Segmented } from '../shared/dialogParts'
 import ListImportPreview from './ListImportPreview'
-import { useListImportPreview } from './useListImportPreview'
+import { useListPreviewView } from './useListPreviewView'
 import type { SidebarState } from './usePlacesSidebar'
 
 type ListProvider = SidebarState['listImportProvider']
@@ -20,10 +20,7 @@ export function ListImportModal(S: SidebarState) {
   const urlId = useId()
   const enrichHintId = useId()
   const close = closeListImport
-  const preview = useListImportPreview(listImportPreview, language)
-  const commit = preview.toCommit(listImportPreview?.listName ?? '', listImportEnrich)
-  // A link-only commit (ids to attach, pins to move) is a valid import with no place ticked.
-  const nothingToCommit = preview.counts.toImport === 0 && commit.link.length === 0 && commit.movePin.length === 0
+  const view = useListPreviewView(listImportPreview, language, t, { enrich: listImportEnrich, loading: listImportLoading })
   const google = listImportProvider === 'google'
   const cannotImport = !listImportUrl.trim() || listImportLoading
   const providerLabel = (provider: ListProvider) => provider === 'google' ? t('places.importGoogleList') : t('places.importNaverList')
@@ -49,15 +46,11 @@ export function ListImportModal(S: SidebarState) {
           <DialogButton onClick={close}>{t('common.cancel')}</DialogButton>
           <DialogButton
             variant="primary"
-            onClick={listImportPreview ? () => handleListCommit(commit) : () => void handleListImport()}
-            disabled={listImportPreview ? listImportLoading || nothingToCommit : cannotImport}
+            onClick={listImportPreview ? () => void handleListCommit(view.commit) : () => void handleListImport()}
+            disabled={listImportPreview ? view.submitDisabled : cannotImport}
             icon={listImportLoading ? <Loader2 size={14} className="animate-spin" /> : undefined}
           >
-            {listImportLoading
-              ? t('common.loading')
-              : listImportPreview && preview.counts.toImport > 0
-                ? t('places.listPreview.import', { count: preview.counts.toImport })
-                : t('common.import')}
+            {listImportPreview ? view.submitLabel : listImportLoading ? t('common.loading') : t('common.import')}
           </DialogButton>
         </DialogFooter>
       )}
@@ -67,7 +60,7 @@ export function ListImportModal(S: SidebarState) {
           <p className="m-0 font-semibold text-content" style={fs(13, 'body')}>
             {t('places.listPreview.listInfo', { list: listImportPreview.listName, count: listImportPreview.places.length })}
           </p>
-          <ListImportPreview preview={preview} t={t} language={language} />
+          <ListImportPreview view={view} t={t} language={language} />
         </>
       ) : (
         <>

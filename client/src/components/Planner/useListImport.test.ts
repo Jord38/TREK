@@ -1,4 +1,4 @@
-// FE-PLANNER-LISTIMP-001 to FE-PLANNER-LISTIMP-024: the shared-list import logic behind
+// FE-PLANNER-LISTIMP-001 to FE-PLANNER-LISTIMP-026: the shared-list import logic behind
 // the desktop dialog (no onDone) and the phone's import step (onDone).
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -306,7 +306,7 @@ describe('useListImport', () => {
       expect(result.current.previewData).toEqual(listPreview);
       expect(google).not.toHaveBeenCalled();
       expect(loadTrip).not.toHaveBeenCalled();
-      expect(result.current.previewLoading).toBe(false);
+      expect(result.current.loading).toBe(false);
     });
 
     it('FE-PLANNER-LISTIMP-024: close drops the preview with the link and shuts the dialog, so a reopen starts clean', async () => {
@@ -364,7 +364,9 @@ describe('useListImport', () => {
       });
       expect(commit).toHaveBeenCalledWith(1, { ...request, enrich: false });
       expect(loadTrip).toHaveBeenCalledWith(1);
-      expect(toast.success).toHaveBeenCalledWith('places.googleListImported:2,Weekend');
+      expect(toast.success).toHaveBeenCalledWith(
+        'places.googleListImported:2,Weekend · places.listPreview.toastLinked:1 · places.listPreview.toastMoved:1'
+      );
       expect(result.current.open).toBe(false);
       expect(result.current.previewData).toBeNull();
       expect(pushUndo).toHaveBeenCalledTimes(1);
@@ -390,8 +392,8 @@ describe('useListImport', () => {
       expect(pushUndo).not.toHaveBeenCalled();
     });
 
-    it('FE-PLANNER-LISTIMP-020: only links and moves still count as an import', async () => {
-      vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
+    it('FE-PLANNER-LISTIMP-020: a commit of only links and moves toasts what it linked and moved, not 0 places', async () => {
+      const commit = vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
         places: [],
         count: 0,
         listName: 'Weekend',
@@ -403,7 +405,14 @@ describe('useListImport', () => {
       await act(async () => {
         await result.current.handleCommit(request);
       });
-      expect(toast.success).toHaveBeenCalledWith('places.googleListImported:0,Weekend');
+      expect(toast.success).toHaveBeenLastCalledWith('places.listPreview.toastLinked:2');
+      commit.mockResolvedValue({ places: [], count: 0, listName: 'Weekend', linked: 1, moved: 3, stale: 0 });
+      await act(async () => {
+        await result.current.handleCommit(request);
+      });
+      expect(toast.success).toHaveBeenLastCalledWith(
+        'places.listPreview.toastLinked:1 · places.listPreview.toastMoved:3'
+      );
     });
 
     it('FE-PLANNER-LISTIMP-021: enrichment goes with the commit only with a maps key; a failed commit keeps the preview', async () => {
@@ -420,6 +429,64 @@ describe('useListImport', () => {
       expect(loadTrip).not.toHaveBeenCalled();
       expect(result.current.previewData).toEqual(listPreview);
       expect(result.current.loading).toBe(false);
+    });
+
+    it('FE-PLANNER-LISTIMP-025: a failed reload after a landed commit still closes the preview and registers the undo', async () => {
+      vi.mocked(placeListImportApi.previewGoogleList).mockResolvedValue(listPreview);
+      const commit = vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
+        places: [{ id: 31 }] as never,
+        count: 1,
+        listName: 'Weekend',
+        linked: 0,
+        moved: 0,
+        stale: 0,
+      });
+      const { result, toast, loadTrip, pushUndo } = setup();
+      act(() => result.current.setOpen(true));
+      await importUrl(result, 'https://maps.app.goo.gl/abc');
+      loadTrip.mockRejectedValueOnce(new Error('offline'));
+
+      await act(async () => {
+        await result.current.handleCommit(request);
+      });
+      expect(commit).toHaveBeenCalledTimes(1);
+      expect(toast.success).toHaveBeenCalledWith('places.googleListImported:1,Weekend');
+      expect(toast.error).not.toHaveBeenCalled();
+      expect(pushUndo).toHaveBeenCalledTimes(1);
+      // The dialog offers a commit only while it holds a preview.
+      expect(result.current.previewData).toBeNull();
+      expect(result.current.open).toBe(false);
+      expect(result.current.loading).toBe(false);
+    });
+
+    it('FE-PLANNER-LISTIMP-026: a second commit while one is in flight is refused', async () => {
+      let land: (value: Awaited<ReturnType<typeof placeListImportApi.commitGoogleList>>) => void = () => {};
+      const commit = vi.spyOn(placeListImportApi, 'commitGoogleList').mockImplementation(
+        () =>
+          new Promise((resolve) => {
+            land = resolve;
+          })
+      );
+      const { result } = setup();
+      let first: Promise<void> = Promise.resolve();
+      act(() => {
+        first = result.current.handleCommit(request);
+        void result.current.handleCommit(request);
+      });
+      expect(commit).toHaveBeenCalledTimes(1);
+      await act(async () => {
+        land({ places: [], count: 0, listName: 'Weekend', linked: 1, moved: 0, stale: 0 });
+        await first;
+      });
+      let again: Promise<void> = Promise.resolve();
+      act(() => {
+        again = result.current.handleCommit(request);
+      });
+      expect(commit).toHaveBeenCalledTimes(2);
+      await act(async () => {
+        land({ places: [], count: 0, listName: 'Weekend', linked: 1, moved: 0, stale: 0 });
+        await again;
+      });
     });
 
     it('FE-PLANNER-LISTIMP-022: backToLink drops the preview and keeps the link', async () => {

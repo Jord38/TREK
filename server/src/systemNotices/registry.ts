@@ -127,6 +127,33 @@ export const SYSTEM_NOTICES: SystemNotice[] = [
     minVersion: '4.0.0',
   },
 
+  // ── Welcome tour — this fork only ──────────────────────────────────────────
+  // The intro video for somebody who just joined. The file is not in the image:
+  // the instance mounts it at /media (see FORK.md), so it can change without a
+  // rebuild. Ahead of the release notes, which a new user gets on the same login.
+  {
+    id: 'welcome-tour',
+    display: 'modal',
+    severity: 'info',
+    titleKey: 'system_notice.welcome_tour.title',
+    bodyKey: 'system_notice.welcome_tour.body',
+    media: {
+      kind: 'video',
+      src: '/media/trek-intro.mp4',
+      altKey: 'system_notice.welcome_tour.video_label',
+      placement: 'hero',
+    },
+    cta: {
+      kind: 'nav',
+      labelKey: 'system_notice.welcome_tour.cta',
+      href: '/dashboard',
+    },
+    dismissible: true,
+    conditions: [{ kind: 'firstLogin' }],
+    publishedAt: '2026-11-02T00:00:00Z',
+    priority: 120,
+  },
+
   // ── Thank-you + support the project — shown once per install AND once per upgrade ──
   // `recurring: 'per-version'` re-surfaces it whenever the app version moves up.
   {

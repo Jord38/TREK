@@ -58,11 +58,11 @@ describe('loadForkChangelog', () => {
 });
 
 describe('newestFirst', () => {
-  it('orders by date descending, later ids first on the same day', () => {
+  it('orders by date descending, later in the file first on the same day', () => {
     const a = entry({ id: 'a', date: '2030-01-01' });
-    const b = entry({ id: 'b', date: '2030-02-01' });
-    const c = entry({ id: 'c', date: '2030-02-01' });
-    expect(newestFirst([a, b, c]).map((e) => e.id)).toEqual(['c', 'b', 'a']);
+    const b = entry({ id: 'z', date: '2030-02-01' });
+    const c = entry({ id: 'm', date: '2030-02-01' });
+    expect(newestFirst([a, b, c]).map((e) => e.id)).toEqual(['m', 'z', 'a']);
   });
 });
 

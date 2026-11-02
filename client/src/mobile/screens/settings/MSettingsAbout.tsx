@@ -17,7 +17,7 @@ const ROW_CLASS =
   'flex items-center gap-[13px] rounded-xl border border-[color:var(--m-rowbr)] bg-[color:var(--m-sheet)] px-[14px] py-3 no-underline'
 
 /** "About" section — AboutTab parity as tappable link rows. */
-export default function MSettingsAbout({ appVersion }: { appVersion: string }) {
+export default function MSettingsAbout({ appVersion, build }: { appVersion: string; build?: string | null }) {
   const { t } = useTranslation()
 
   const links: AboutLink[] = [
@@ -37,7 +37,7 @@ export default function MSettingsAbout({ appVersion }: { appVersion: string }) {
         {t('settings.about.madeWith')} <Heart size={10} className="inline-block align-[-1px] text-[color:var(--m-st-danger)]" />{' '}
         {t('settings.about.madeBy')}{' '}
         <span className="inline-flex items-center rounded-full bg-[color:var(--m-ic)] px-[7px] py-[1px] font-geist text-[0.625rem] font-bold text-m-muted align-[1px]">
-          v{appVersion}
+          {build || `v${appVersion}`}
         </span>
       </p>
 

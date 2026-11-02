@@ -46,6 +46,8 @@ COPY server/ ./server/
 # tsc needs more than the 2 GB heap Node picks on a host with about 12 GB of RAM;
 # on a bigger build machine the default is larger, so only small hosts failed.
 RUN NODE_OPTIONS=--max-old-space-size=4096 npm run build --workspace=server
+# A hand-edited changelog that breaks the schema would otherwise ship and show nothing.
+RUN node server/scripts/check-fork-changelog.mjs
 
 # ── Stage 4: production runtime ──────────────────────────────────────────────
 FROM node:24-trixie-slim

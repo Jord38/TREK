@@ -27,7 +27,11 @@ export function loadForkChangelog(file: string = DEFAULT_FILE): ForkChangelogEnt
 }
 
 export function newestFirst(entries: readonly ForkChangelogEntry[]): ForkChangelogEntry[] {
-  return [...entries].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  // Same-day entries keep file order: the one added last is the newest.
+  return entries
+    .map((entry, index) => ({ entry, index }))
+    .sort((a, b) => b.entry.date.localeCompare(a.entry.date) || b.index - a.index)
+    .map(({ entry }) => entry);
 }
 
 export function forkChangelogNotice(entry: ForkChangelogEntry): SystemNotice {

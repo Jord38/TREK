@@ -9,4 +9,15 @@ describe('MSettingsAbout', () => {
     expect(link).toHaveAttribute('href', '/whats-new');
     expect(link).not.toHaveAttribute('target');
   });
+
+  it('FE-MOBILE-ABOUT-002: shows the build name instead of the version when there is one', () => {
+    render(<MSettingsAbout appVersion="1.2.3" build="1.2.3-fork.4" />);
+    expect(screen.getByText('1.2.3-fork.4')).toBeInTheDocument();
+    expect(screen.queryByText('v1.2.3')).not.toBeInTheDocument();
+  });
+
+  it('FE-MOBILE-ABOUT-003: shows v<version> without a build', () => {
+    render(<MSettingsAbout appVersion="1.2.3" />);
+    expect(screen.getByText('v1.2.3')).toBeInTheDocument();
+  });
 });

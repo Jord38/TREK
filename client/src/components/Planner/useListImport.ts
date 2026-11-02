@@ -198,5 +198,6 @@ export function useListImport({ tripId, t, toast, loadTrip, pushUndo, onDone }: 
     handlePreview,
     handleCommit,
     backToLink,
+    close,
   };
 }

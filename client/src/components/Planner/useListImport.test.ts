@@ -1,4 +1,4 @@
-// FE-PLANNER-LISTIMP-001 to FE-PLANNER-LISTIMP-023: the shared-list import logic behind
+// FE-PLANNER-LISTIMP-001 to FE-PLANNER-LISTIMP-024: the shared-list import logic behind
 // the desktop dialog (no onDone) and the phone's import step (onDone).
 import { act, renderHook } from '@testing-library/react';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -307,6 +307,18 @@ describe('useListImport', () => {
       expect(google).not.toHaveBeenCalled();
       expect(loadTrip).not.toHaveBeenCalled();
       expect(result.current.previewLoading).toBe(false);
+    });
+
+    it('FE-PLANNER-LISTIMP-024: close drops the preview with the link and shuts the dialog, so a reopen starts clean', async () => {
+      vi.mocked(placeListImportApi.previewGoogleList).mockResolvedValue(listPreview);
+      const { result } = setup();
+      act(() => result.current.setOpen(true));
+      await importUrl(result, 'https://maps.app.goo.gl/abc');
+      expect(result.current.previewData).toEqual(listPreview);
+      act(() => result.current.close());
+      expect(result.current.open).toBe(false);
+      expect(result.current.url).toBe('');
+      expect(result.current.previewData).toBeNull();
     });
 
     it('FE-PLANNER-LISTIMP-016: a directions answer runs the direct import with its usual toast', async () => {

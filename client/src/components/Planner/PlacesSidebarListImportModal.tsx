@@ -3,20 +3,27 @@ import { ListPlus, Loader2 } from 'lucide-react'
 import ToggleSwitch from '../Settings/ToggleSwitch'
 import { DialogButton, DialogFooter, DialogHeader, DialogShell, DialogTile, FooterSpacer, NEUTRAL_TINT, fs } from '../shared/DialogShell'
 import { EditorField, INPUT, Segmented } from '../shared/dialogParts'
+import ListImportPreview from './ListImportPreview'
+import { useListImportPreview } from './useListImportPreview'
 import type { SidebarState } from './usePlacesSidebar'
 
 type ListProvider = SidebarState['listImportProvider']
 
 export function ListImportModal(S: SidebarState) {
   const {
-    setListImportOpen, setListImportUrl, t, hasMultipleListImportProviders, availableListImportProviders,
+    closeListImport, setListImportUrl, t, language, hasMultipleListImportProviders, availableListImportProviders,
     listImportProvider, setListImportProvider, listImportUrl, listImportLoading, handleListImport,
     listImportEnrich, setListImportEnrich, canEnrichImport,
+    listImportPreview, handleListCommit, backToLink,
   } = S
   const titleId = useId()
   const urlId = useId()
   const enrichHintId = useId()
-  const close = () => { setListImportOpen(false); setListImportUrl('') }
+  const close = closeListImport
+  const preview = useListImportPreview(listImportPreview, language)
+  const commit = preview.toCommit(listImportPreview?.listName ?? '', listImportEnrich)
+  // A link-only commit (ids to attach, pins to move) is a valid import with no place ticked.
+  const nothingToCommit = preview.counts.toImport === 0 && commit.link.length === 0 && commit.movePin.length === 0
   const google = listImportProvider === 'google'
   const cannotImport = !listImportUrl.trim() || listImportLoading
   const providerLabel = (provider: ListProvider) => provider === 'google' ? t('places.importGoogleList') : t('places.importNaverList')
@@ -37,54 +44,70 @@ export function ListImportModal(S: SidebarState) {
       )}
       footer={(
         <DialogFooter>
+          {listImportPreview && <DialogButton onClick={backToLink}>{t('common.back')}</DialogButton>}
           <FooterSpacer />
           <DialogButton onClick={close}>{t('common.cancel')}</DialogButton>
           <DialogButton
             variant="primary"
-            onClick={handleListImport}
-            disabled={cannotImport}
+            onClick={listImportPreview ? () => handleListCommit(commit) : () => void handleListImport()}
+            disabled={listImportPreview ? listImportLoading || nothingToCommit : cannotImport}
             icon={listImportLoading ? <Loader2 size={14} className="animate-spin" /> : undefined}
           >
-            {listImportLoading ? t('common.loading') : t('common.import')}
+            {listImportLoading
+              ? t('common.loading')
+              : listImportPreview && preview.counts.toImport > 0
+                ? t('places.listPreview.import', { count: preview.counts.toImport })
+                : t('common.import')}
           </DialogButton>
         </DialogFooter>
       )}
     >
-      {hasMultipleListImportProviders && (
-        <EditorField label={t('settings.aiParsing.provider')}>
-          <Segmented<ListProvider>
-            fill
-            label={t('settings.aiParsing.provider')}
-            value={listImportProvider}
-            onChange={setListImportProvider}
-            options={availableListImportProviders.map(provider => ({ value: provider, label: providerLabel(provider) }))}
-          />
-        </EditorField>
-      )}
+      {listImportPreview ? (
+        <>
+          <p className="m-0 font-semibold text-content" style={fs(13, 'body')}>
+            {t('places.listPreview.listInfo', { list: listImportPreview.listName, count: listImportPreview.places.length })}
+          </p>
+          <ListImportPreview preview={preview} t={t} language={language} />
+        </>
+      ) : (
+        <>
+          {hasMultipleListImportProviders && (
+            <EditorField label={t('settings.aiParsing.provider')}>
+              <Segmented<ListProvider>
+                fill
+                label={t('settings.aiParsing.provider')}
+                value={listImportProvider}
+                onChange={setListImportProvider}
+                options={availableListImportProviders.map(provider => ({ value: provider, label: providerLabel(provider) }))}
+              />
+            </EditorField>
+          )}
 
-      <EditorField
-        label={t('reservations.urlLabel')}
-        htmlFor={urlId}
-        hint={(
-          <>
-            {t(google ? 'places.googleListHint' : 'places.naverListHint')}
-            {/* Same box, same Share button: which screen the link came from is the URL's
-                business, and until it said so nobody knew a route could be pasted here. */}
-            {google && <span className="mt-1 block">{t('places.googleDirHint')}</span>}
-          </>
-        )}
-      >
-        <input
-          id={urlId}
-          type="text"
-          value={listImportUrl}
-          onChange={e => setListImportUrl(e.target.value)}
-          onKeyDown={e => { if (e.key === 'Enter' && !listImportLoading) void handleListImport() }}
-          placeholder={google ? 'https://maps.app.goo.gl/...' : 'https://naver.me/...'}
-          autoFocus
-          className={INPUT}
-        />
-      </EditorField>
+          <EditorField
+            label={t('reservations.urlLabel')}
+            htmlFor={urlId}
+            hint={(
+              <>
+                {t(google ? 'places.googleListHint' : 'places.naverListHint')}
+                {/* Same box, same Share button: which screen the link came from is the URL's
+                    business, and until it said so nobody knew a route could be pasted here. */}
+                {google && <span className="mt-1 block">{t('places.googleDirHint')}</span>}
+              </>
+            )}
+          >
+            <input
+              id={urlId}
+              type="text"
+              value={listImportUrl}
+              onChange={e => setListImportUrl(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter' && !listImportLoading) void handleListImport() }}
+              placeholder={google ? 'https://maps.app.goo.gl/...' : 'https://naver.me/...'}
+              autoFocus
+              className={INPUT}
+            />
+          </EditorField>
+        </>
+      )}
 
       {canEnrichImport && (
         <div className="flex items-start gap-3 rounded-[14px] border border-edge-faint bg-surface-secondary p-3">

@@ -674,6 +674,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Klaar',
   'settings.mcp.deprecated': 'Verouderd',
   'settings.offline.cache.dateRange': '{start} tot {end}',
+  'whatsNew.title': 'Wat is er nieuw',
+  'whatsNew.hint': 'Wat er recent in TREK is veranderd',
+  'whatsNew.empty': 'Er is nog niets nieuws.',
+  'whatsNew.errorTitle': 'Wat is er nieuw kon niet worden geladen',
+  'whatsNew.errorBody': 'Controleer je verbinding en probeer het opnieuw.',
+  'whatsNew.kind.added': 'Toegevoegd',
+  'whatsNew.kind.changed': 'Gewijzigd',
+  'whatsNew.kind.fixed': 'Opgelost',
 };
 
 export default settings;

@@ -682,6 +682,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'تم',
   'settings.mcp.deprecated': 'مهجور',
   'settings.offline.cache.dateRange': 'من {start} إلى {end}',
+  'whatsNew.title': 'ما الجديد',
+  'whatsNew.hint': 'ما تغيّر مؤخرًا في TREK',
+  'whatsNew.empty': 'لا يوجد جديد بعد.',
+  'whatsNew.errorTitle': 'تعذّر تحميل الجديد',
+  'whatsNew.errorBody': 'تحقق من اتصالك وحاول مرة أخرى.',
+  'whatsNew.kind.added': 'أُضيف',
+  'whatsNew.kind.changed': 'تغيّر',
+  'whatsNew.kind.fixed': 'أُصلح',
 };
 
 export default settings;

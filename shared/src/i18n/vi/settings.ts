@@ -661,6 +661,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Xong',
   'settings.mcp.deprecated': 'Không còn được khuyến nghị',
   'settings.offline.cache.dateRange': '{start} đến {end}',
+  'whatsNew.title': 'Có gì mới',
+  'whatsNew.hint': 'Những thay đổi gần đây trong TREK',
+  'whatsNew.empty': 'Chưa có gì mới.',
+  'whatsNew.errorTitle': 'Không thể tải phần có gì mới',
+  'whatsNew.errorBody': 'Hãy kiểm tra kết nối và thử lại.',
+  'whatsNew.kind.added': 'Đã thêm',
+  'whatsNew.kind.changed': 'Đã thay đổi',
+  'whatsNew.kind.fixed': 'Đã sửa',
 };
 
 export default settings;

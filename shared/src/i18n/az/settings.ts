@@ -724,6 +724,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Hazır',
   'settings.mcp.deprecated': 'Köhnəlmiş',
   'settings.offline.cache.dateRange': '{start} tarixindən {end} tarixinədək',
+  'whatsNew.title': 'Yeniliklər',
+  'whatsNew.hint': 'TREK-də son vaxtlar nələr dəyişib',
+  'whatsNew.empty': 'Hələ yenilik yoxdur.',
+  'whatsNew.errorTitle': 'Yenilikləri yükləmək alınmadı',
+  'whatsNew.errorBody': 'Bağlantını yoxla və yenidən cəhd et.',
+  'whatsNew.kind.added': 'Əlavə edildi',
+  'whatsNew.kind.changed': 'Dəyişdirildi',
+  'whatsNew.kind.fixed': 'Düzəldildi',
 };
 
 export default settings;

@@ -11,8 +11,10 @@ import {
   MapPin,
   Route,
   Search,
+  Sparkles,
 } from 'lucide-react';
 import React, { type CSSProperties, type ReactNode } from 'react';
+import { Link } from 'react-router';
 import { useTranslation } from '../../i18n';
 import { useAuthStore } from '../../store/authStore';
 import { fs } from '../shared/DialogShell';
@@ -92,6 +94,29 @@ function LinkTile({
       </div>
       <ExternalLink size={14} className="flex-none text-content-faint" />
     </a>
+  );
+}
+
+/** The in-app changelog: a tile like the outbound ones, but a route change instead of a new tab. */
+function WhatsNewTile() {
+  const { t } = useTranslation();
+  return (
+    <Link
+      to="/whats-new"
+      className="flex min-w-0 items-center gap-3 overflow-hidden rounded-[14px] border border-edge bg-surface-card px-3.5 py-3 no-underline shadow-sm transition-[border-color] duration-200 hover:border-content-faint"
+    >
+      <span className="grid h-10 w-10 flex-none place-items-center rounded-[12px] bg-surface-tertiary text-content-secondary">
+        <Sparkles size={19} />
+      </span>
+      <div className="min-w-0 flex-1">
+        <div className="truncate font-semibold text-content" style={fs(13, 'body')}>
+          {t('whatsNew.title')}
+        </div>
+        <div className="truncate text-content-faint" style={fs(11.5)}>
+          {t('whatsNew.hint')}
+        </div>
+      </div>
+    </Link>
   );
 }
 
@@ -234,6 +259,8 @@ export default function AboutTab({ appVersion, build }: Props): React.ReactEleme
           {t('settings.about.madeBy')}
         </p>
       </div>
+
+      <WhatsNewTile />
 
       {/* Ko-fi, Buy Me a Coffee, Discord, and the issue/discussion links assume
           the reader runs this install and can act on it. On a centrally

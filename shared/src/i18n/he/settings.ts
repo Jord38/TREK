@@ -640,6 +640,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'סיום',
   'settings.mcp.deprecated': 'מיושן',
   'settings.offline.cache.dateRange': '{start} עד {end}',
+  'whatsNew.title': 'מה חדש',
+  'whatsNew.hint': 'מה השתנה לאחרונה ב-TREK',
+  'whatsNew.empty': 'אין עדיין חדשות.',
+  'whatsNew.errorTitle': 'לא ניתן היה לטעון את החדשות',
+  'whatsNew.errorBody': 'בדקו את החיבור ונסו שוב.',
+  'whatsNew.kind.added': 'נוסף',
+  'whatsNew.kind.changed': 'שונה',
+  'whatsNew.kind.fixed': 'תוקן',
 };
 
 export default settings;

@@ -665,6 +665,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Valmis',
   'settings.mcp.deprecated': 'Aegunud',
   'settings.offline.cache.dateRange': '{start} kuni {end}',
+  'whatsNew.title': 'Mis on uut',
+  'whatsNew.hint': 'Mis on TREKis viimasel ajal muutunud',
+  'whatsNew.empty': 'Uudiseid veel pole.',
+  'whatsNew.errorTitle': 'Uudiseid ei õnnestunud laadida',
+  'whatsNew.errorBody': 'Kontrolli ühendust ja proovi uuesti.',
+  'whatsNew.kind.added': 'Lisatud',
+  'whatsNew.kind.changed': 'Muudetud',
+  'whatsNew.kind.fixed': 'Parandatud',
 };
 
 export default settings;

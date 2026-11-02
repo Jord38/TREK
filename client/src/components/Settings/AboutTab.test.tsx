@@ -25,6 +25,13 @@ describe('AboutTab', () => {
     expect(screen.queryByText('v5.1.0')).toBeNull();
   });
 
+  it('FE-COMP-ABOUT-002c: links to the changelog page inside the app', () => {
+    render(<AboutTab appVersion="2.9.10" />);
+    const link = screen.getByText("What's new").closest('a');
+    expect(link).toHaveAttribute('href', '/whats-new');
+    expect(link).not.toHaveAttribute('target');
+  });
+
   it('FE-COMP-ABOUT-003: displays Ko-fi link with correct href', () => {
     render(<AboutTab appVersion="2.9.10" />);
     const link = screen.getByText('Ko-fi').closest('a');
@@ -65,7 +72,7 @@ describe('AboutTab', () => {
 
   it('FE-COMP-ABOUT-009: all external links have rel="noopener noreferrer"', () => {
     render(<AboutTab appVersion="2.9.10" />);
-    const links = document.querySelectorAll('a');
+    const links = document.querySelectorAll('a:not([href^="/"])');
     // Six tiles, and the sponsor panel: its logo, its button and the name in its title and body.
     expect(links).toHaveLength(10);
     links.forEach((link) => {
@@ -75,7 +82,7 @@ describe('AboutTab', () => {
 
   it('FE-COMP-ABOUT-010: all external links open in a new tab', () => {
     render(<AboutTab appVersion="2.9.10" />);
-    const links = document.querySelectorAll('a');
+    const links = document.querySelectorAll('a:not([href^="/"])');
     links.forEach((link) => {
       expect(link).toHaveAttribute('target', '_blank');
     });

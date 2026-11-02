@@ -642,6 +642,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': '완료',
   'settings.mcp.deprecated': '지원 중단 예정',
   'settings.offline.cache.dateRange': '{start}부터 {end}까지',
+  'whatsNew.title': '새로운 소식',
+  'whatsNew.hint': 'TREK의 최근 변경 사항',
+  'whatsNew.empty': '아직 새로운 소식이 없습니다.',
+  'whatsNew.errorTitle': '새로운 소식을 불러오지 못했습니다',
+  'whatsNew.errorBody': '연결을 확인한 후 다시 시도하세요.',
+  'whatsNew.kind.added': '추가됨',
+  'whatsNew.kind.changed': '변경됨',
+  'whatsNew.kind.fixed': '수정됨',
 };
 
 export default settings;

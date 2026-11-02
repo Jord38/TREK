@@ -53,6 +53,7 @@ const AdminPage = lazyWithRetry(() => import('./pages/AdminPage'))
 const SettingsPage = lazyWithRetry(() => import('./pages/SettingsPage'))
 const VacayPage = lazyWithRetry(() => import('./pages/VacayPage'))
 const HelpPage = lazyWithRetry(() => import('./pages/HelpPage'))
+const WhatsNewPage = lazyWithRetry(() => import('./pages/WhatsNewPage'))
 const AtlasPage = lazyWithRetry(() => import('./pages/AtlasPage'))
 const JourneyPage = lazyWithRetry(() => import('./pages/JourneyPage'))
 const JourneyDetailPage = lazyWithRetry(() => import('./pages/JourneyDetailPage'))
@@ -497,6 +498,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ViewportRoute phone={MSettingsScreen} desktop={SettingsPage} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/whats-new"
+            element={
+              <ProtectedRoute>
+                <WhatsNewPage />
               </ProtectedRoute>
             }
           />

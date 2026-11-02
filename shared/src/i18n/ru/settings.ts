@@ -690,6 +690,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Готово',
   'settings.mcp.deprecated': 'Устарело',
   'settings.offline.cache.dateRange': 'с {start} по {end}',
+  'whatsNew.title': 'Что нового',
+  'whatsNew.hint': 'Что недавно изменилось в TREK',
+  'whatsNew.empty': 'Пока ничего нового.',
+  'whatsNew.errorTitle': 'Не удалось загрузить новости',
+  'whatsNew.errorBody': 'Проверьте подключение и попробуйте снова.',
+  'whatsNew.kind.added': 'Добавлено',
+  'whatsNew.kind.changed': 'Изменено',
+  'whatsNew.kind.fixed': 'Исправлено',
 };
 
 export default settings;

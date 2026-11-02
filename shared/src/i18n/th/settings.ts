@@ -645,6 +645,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.copyFailed': 'ไม่สามารถคัดลอกได้ เลือกข้อความและคัดลอกด้วยตนเอง',
   'settings.mcp.deprecated': 'เลิกใช้แล้ว',
   'settings.offline.cache.dateRange': '{start} ถึง {end}',
+  'whatsNew.title': 'มีอะไรใหม่',
+  'whatsNew.hint': 'สิ่งที่เปลี่ยนแปลงใน TREK ล่าสุด',
+  'whatsNew.empty': 'ยังไม่มีอะไรใหม่',
+  'whatsNew.errorTitle': 'โหลดสิ่งใหม่ไม่สำเร็จ',
+  'whatsNew.errorBody': 'ตรวจสอบการเชื่อมต่อแล้วลองอีกครั้ง',
+  'whatsNew.kind.added': 'เพิ่มแล้ว',
+  'whatsNew.kind.changed': 'เปลี่ยนแปลงแล้ว',
+  'whatsNew.kind.fixed': 'แก้ไขแล้ว',
 };
 
 export default settings;

@@ -673,6 +673,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Kész',
   'settings.mcp.deprecated': 'Elavult',
   'settings.offline.cache.dateRange': '{start} és {end} között',
+  'whatsNew.title': 'Újdonságok',
+  'whatsNew.hint': 'Mi változott mostanában a TREK-ben',
+  'whatsNew.empty': 'Még nincs újdonság.',
+  'whatsNew.errorTitle': 'Nem sikerült betölteni az újdonságokat',
+  'whatsNew.errorBody': 'Ellenőrizd a kapcsolatot, és próbáld újra.',
+  'whatsNew.kind.added': 'Új',
+  'whatsNew.kind.changed': 'Módosítva',
+  'whatsNew.kind.fixed': 'Javítva',
 };
 
 export default settings;

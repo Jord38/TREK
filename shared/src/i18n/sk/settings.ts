@@ -674,6 +674,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Hotovo',
   'settings.mcp.deprecated': 'Zastarané',
   'settings.offline.cache.dateRange': '{start} až {end}',
+  'whatsNew.title': 'Čo je nové',
+  'whatsNew.hint': 'Čo sa v TREKu nedávno zmenilo',
+  'whatsNew.empty': 'Zatiaľ nič nové.',
+  'whatsNew.errorTitle': 'Novinky sa nepodarilo načítať',
+  'whatsNew.errorBody': 'Skontrolujte pripojenie a skúste to znova.',
+  'whatsNew.kind.added': 'Pridané',
+  'whatsNew.kind.changed': 'Zmenené',
+  'whatsNew.kind.fixed': 'Opravené',
 };
 
 export default settings;

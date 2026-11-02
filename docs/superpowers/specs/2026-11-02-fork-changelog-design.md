@@ -50,16 +50,19 @@ whole history. A page left open during the deploy offers a reload first.
 ## Anti-goals
 
 - Never change the version plugins and the places issuer see.
-- A brand-new user must not be shown entries from before they joined; their
-  first login belongs to the welcome video.
+- A brand-new user must not be shown entries from before they joined. If their
+  welcome video is still undismissed, it comes first (higher priority) in the
+  same modal.
 - Never nag: an entry a user closed never comes back for that user.
 
 ## Decided
 
 - Entry shape: `{ id: string, date: 'YYYY-MM-DD', title: string, items: { kind: 'added' | 'changed' | 'fixed', text: string }[] }`; ids unique and stable (a date plus a slug).
-- Who sees an entry in the dialog: users who existed before the entry's date and
-  are past their first login. Entries dated before the user's account was created
-  never show in the dialog (they are on the page).
+- Who sees an entry in the dialog: users whose account existed before the
+  entry's date. Logins do not matter: a remembered session lasts up to 30 days,
+  so someone who logged in once and kept using TREK still gets every later entry.
+  Entries dated before the user's account was created never show in the dialog
+  (they are on the page).
 - Several missed entries: all of them, newest first, in one dialog (Jord's
   answer). Whether that is one notice with the entries stacked or one notice per
   entry paged through TREK's existing multi-notice modal is the builder's call,
@@ -85,7 +88,8 @@ whole history. A page left open during the deploy offers a reload first.
 - **First deploy of this feature:** open pages still run a bundle without a
   build name, so they get no reload prompt that one time; the dialog appears on
   their next load. Acceptable.
-- **"Past first login" is `login_count > 1`.** Nothing else is required.
+- **No login condition.** Only the account's creation day decides (Jord: a
+  friend who logged in once and stayed signed in must still get new entries).
 
 ## Constraints
 

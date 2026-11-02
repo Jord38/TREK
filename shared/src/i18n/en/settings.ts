@@ -658,6 +658,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Done',
   'settings.mcp.deprecated': 'Deprecated',
   'settings.offline.cache.dateRange': '{start} to {end}',
+  'whatsNew.title': "What's new",
+  'whatsNew.hint': 'What changed in TREK recently',
+  'whatsNew.empty': 'Nothing new to show yet.',
+  'whatsNew.errorTitle': "Couldn't load what's new",
+  'whatsNew.errorBody': 'Check your connection and try again.',
+  'whatsNew.kind.added': 'Added',
+  'whatsNew.kind.changed': 'Changed',
+  'whatsNew.kind.fixed': 'Fixed',
 };
 
 export default settings;

@@ -1,4 +1,5 @@
 import { registerPredicate } from './conditions.js';
+import { FORK_CHANGELOG_ENTRIES, forkChangelogNotice } from './fork-changelog.js';
 import type { SystemNotice } from './types.js';
 
 /**
@@ -219,4 +220,6 @@ export const SYSTEM_NOTICES: SystemNotice[] = [
     priority: 85,
     minVersion: '3.0.14',
   },
+  // ── This fork's changelog: one notice per entry, newest first ──
+  ...FORK_CHANGELOG_ENTRIES.map(forkChangelogNotice),
 ];

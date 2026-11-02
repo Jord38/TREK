@@ -298,6 +298,15 @@ describe('ModalRenderer', () => {
     expect(screen.getByText('Hello Alice, welcome to TREK')).toBeTruthy();
   });
 
+  it('FE-SN-MODAL-058: title params are interpolated into the title', async () => {
+    const notice = makeNotice({ titleKey: 'New in TREK: {title}', titleParams: { title: 'Place names' } });
+    render(<ModalRenderer notices={[notice]} />);
+
+    await flushGraceDelay();
+
+    expect(screen.getByText('New in TREK: Place names')).toBeTruthy();
+  });
+
   it('FE-SN-MODAL-057: a body param is inserted literally, not as a replacement pattern', async () => {
     const notice = makeNotice({
       bodyKey: 'Version {version} is here',

@@ -88,5 +88,8 @@ const system_notice: TranslationStrings = {
     'Pencarian tempat, pencarian alamat, dan perutean berjalan di server milik TREK sendiri, saat ini disponsori oleh dataforest cloud. Saya memperjuangkannya setiap hari, dan agar tetap begitu, saya butuh dukungan Anda.',
   'system_notice.release_notes.cta_bmc': 'Traktir aku kopi',
   'system_notice.release_notes.cta_kofi': 'Dukung di Ko-fi',
+  'system_notice.fork_changelog.title': 'Baru di TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Lihat semua perubahan',
 };
 export default system_notice;

@@ -88,5 +88,8 @@ const system_notice: TranslationStrings = {
     '地點搜尋、地址搜尋和路線規劃都在 TREK 自己的伺服器上執行，目前由 dataforest cloud 贊助。我每天都在為此努力，而要一直維持下去，需要你的支持。',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': '在 Ko-fi 上支持我',
+  'system_notice.fork_changelog.title': 'TREK 新功能：{title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': '查看所有變更',
 };
 export default system_notice;

@@ -633,6 +633,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': '完了',
   'settings.mcp.deprecated': '非推奨',
   'settings.offline.cache.dateRange': '{start}から{end}',
+  'whatsNew.title': '新着情報',
+  'whatsNew.hint': 'TREK の最近の変更点',
+  'whatsNew.empty': '新しい情報はまだありません。',
+  'whatsNew.errorTitle': '新着情報を読み込めませんでした',
+  'whatsNew.errorBody': '接続を確認して、もう一度お試しください。',
+  'whatsNew.kind.added': '追加',
+  'whatsNew.kind.changed': '変更',
+  'whatsNew.kind.fixed': '修正',
 };
 
 export default settings;

@@ -682,6 +682,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Terminé',
   'settings.mcp.deprecated': 'Obsolète',
   'settings.offline.cache.dateRange': 'du {start} au {end}',
+  'whatsNew.title': 'Nouveautés',
+  'whatsNew.hint': 'Ce qui a changé récemment dans TREK',
+  'whatsNew.empty': 'Aucune nouveauté pour le moment.',
+  'whatsNew.errorTitle': 'Impossible de charger les nouveautés',
+  'whatsNew.errorBody': 'Vérifiez votre connexion et réessayez.',
+  'whatsNew.kind.added': 'Ajouté',
+  'whatsNew.kind.changed': 'Modifié',
+  'whatsNew.kind.fixed': 'Corrigé',
 };
 
 export default settings;

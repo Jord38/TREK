@@ -88,5 +88,8 @@ const system_notice: TranslationStrings = {
     '장소 검색, 주소 검색, 경로 안내는 TREK 자체 서버에서 돌아가며, 지금은 dataforest cloud가 후원하고 있습니다. 저는 매일 이것을 위해 싸우고 있고, 이대로 지켜 나가려면 여러분의 후원이 필요합니다.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Ko-fi에서 후원하기',
+  'system_notice.fork_changelog.title': 'TREK 새 소식: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': '모든 변경 사항 보기',
 };
 export default system_notice;

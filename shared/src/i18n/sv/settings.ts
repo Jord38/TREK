@@ -664,6 +664,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Klar',
   'settings.mcp.deprecated': 'Utfasad',
   'settings.offline.cache.dateRange': '{start} till {end}',
+  'whatsNew.title': 'Nyheter',
+  'whatsNew.hint': 'Vad som nyligen har ändrats i TREK',
+  'whatsNew.empty': 'Inga nyheter ännu.',
+  'whatsNew.errorTitle': 'Det gick inte att läsa in nyheterna',
+  'whatsNew.errorBody': 'Kontrollera anslutningen och försök igen.',
+  'whatsNew.kind.added': 'Tillagt',
+  'whatsNew.kind.changed': 'Ändrat',
+  'whatsNew.kind.fixed': 'Åtgärdat',
 };
 
 export default settings;

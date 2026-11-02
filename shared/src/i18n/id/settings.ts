@@ -661,6 +661,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': 'Selesai',
   'settings.mcp.deprecated': 'Usang',
   'settings.offline.cache.dateRange': '{start} sampai {end}',
+  'whatsNew.title': 'Yang baru',
+  'whatsNew.hint': 'Yang berubah di TREK belakangan ini',
+  'whatsNew.empty': 'Belum ada yang baru.',
+  'whatsNew.errorTitle': 'Tidak dapat memuat yang baru',
+  'whatsNew.errorBody': 'Periksa koneksi Anda lalu coba lagi.',
+  'whatsNew.kind.added': 'Ditambahkan',
+  'whatsNew.kind.changed': 'Diubah',
+  'whatsNew.kind.fixed': 'Diperbaiki',
 };
 
 export default settings;

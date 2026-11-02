@@ -53,6 +53,7 @@ const AdminPage = lazyWithRetry(() => import('./pages/AdminPage'))
 const SettingsPage = lazyWithRetry(() => import('./pages/SettingsPage'))
 const VacayPage = lazyWithRetry(() => import('./pages/VacayPage'))
 const HelpPage = lazyWithRetry(() => import('./pages/HelpPage'))
+const WhatsNewPage = lazyWithRetry(() => import('./pages/WhatsNewPage'))
 const AtlasPage = lazyWithRetry(() => import('./pages/AtlasPage'))
 const JourneyPage = lazyWithRetry(() => import('./pages/JourneyPage'))
 const JourneyDetailPage = lazyWithRetry(() => import('./pages/JourneyDetailPage'))
@@ -323,7 +324,7 @@ export default function App() {
         loadUser()
       }
     }
-    authApi.getAppConfig().then(async (config: { managed?: boolean; demo_mode?: boolean; dev_mode?: boolean; is_prerelease?: boolean; has_maps_key?: boolean; has_amap_key?: boolean; places_provider?: string; version?: string; timezone?: string; require_mfa?: boolean; trip_reminders_enabled?: boolean; places_photos_enabled?: boolean; places_autocomplete_enabled?: boolean; places_details_enabled?: boolean; places_enrich_enabled?: boolean; place_shadow_enabled?: boolean; max_upload_mb?: number; permissions?: Record<string, PermissionLevel> }) => {
+    authApi.getAppConfig().then(async (config: { managed?: boolean; demo_mode?: boolean; dev_mode?: boolean; is_prerelease?: boolean; has_maps_key?: boolean; has_amap_key?: boolean; places_provider?: string; version?: string; build?: string | null; timezone?: string; require_mfa?: boolean; trip_reminders_enabled?: boolean; places_photos_enabled?: boolean; places_autocomplete_enabled?: boolean; places_details_enabled?: boolean; places_enrich_enabled?: boolean; place_shadow_enabled?: boolean; max_upload_mb?: number; permissions?: Record<string, PermissionLevel> }) => {
       setManaged(!!config?.managed)
       setDemoMode(!!config?.demo_mode)
       if (config?.dev_mode) setDevMode(true)
@@ -343,9 +344,9 @@ export default function App() {
       if (typeof config?.max_upload_mb === 'number' && config.max_upload_mb > 0) useAuthStore.getState().setMaxUploadMb(config.max_upload_mb)
       if (config?.permissions) usePermissionsStore.getState().setPermissions(config.permissions)
       // The version this page starts out with, before the realtime socket reports.
-      useServerVersionStore.getState().note(config?.version)
+      useServerVersionStore.getState().note(config?.version, config?.build)
       // Last, since a new release reloads the page from here.
-      await reconcileAppVersion(config?.version)
+      await reconcileAppVersion(config?.version, config?.build)
     }).catch(() => {})
   }, [])
 
@@ -497,6 +498,14 @@ export default function App() {
             element={
               <ProtectedRoute>
                 <ViewportRoute phone={MSettingsScreen} desktop={SettingsPage} />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/whats-new"
+            element={
+              <ProtectedRoute>
+                <WhatsNewPage />
               </ProtectedRoute>
             }
           />

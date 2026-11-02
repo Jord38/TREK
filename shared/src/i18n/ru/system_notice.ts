@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'Поиск мест, поиск адресов и маршруты работают на собственных серверах TREK, сегодня при поддержке dataforest cloud. Я борюсь за это каждый день, и чтобы так оставалось, нужна ваша поддержка.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Поддержать на Ko-fi',
+  'system_notice.fork_changelog.title': 'Новое в TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Посмотреть все изменения',
 };
 export default system_notice;

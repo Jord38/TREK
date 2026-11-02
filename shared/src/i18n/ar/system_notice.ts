@@ -86,5 +86,8 @@ const system_notice: TranslationStrings = {
     'يعمل البحث عن الأماكن والبحث عن العناوين وتخطيط المسارات على خوادم TREK الخاصة، برعاية dataforest cloud اليوم. أناضل من أجل ذلك كل يوم، والحفاظ عليه يحتاج إلى دعمك.',
   'system_notice.release_notes.cta_bmc': 'اشترِ لي قهوة',
   'system_notice.release_notes.cta_kofi': 'ادعمني على Ko-fi',
+  'system_notice.fork_changelog.title': 'جديد في TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'عرض كل التغييرات',
 };
 export default system_notice;

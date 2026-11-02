@@ -92,6 +92,9 @@ const system_notice: TranslationStrings = {
   'system_notice.pager.counter': '{current} / {total}',
   'system_notice.pager.goto': '{n}-ci bildirişə keç',
   'system_notice.pager.position': '{total} bildirişdən {current}-cisi',
+  'system_notice.fork_changelog.title': 'TREK-də yeni: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Bütün dəyişikliklərə bax',
 };
 
 export default system_notice;

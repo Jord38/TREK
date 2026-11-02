@@ -91,5 +91,8 @@ const system_notice: TranslationStrings = {
     'Tìm địa điểm, tìm địa chỉ và chỉ đường chạy trên máy chủ riêng của TREK, hiện được dataforest cloud tài trợ. Tôi chiến đấu vì điều đó mỗi ngày, và để giữ được như vậy cần có sự ủng hộ của bạn.',
   'system_notice.release_notes.cta_bmc': 'Mời tôi một ly cà phê',
   'system_notice.release_notes.cta_kofi': 'Hỗ trợ trên Ko-fi',
+  'system_notice.fork_changelog.title': 'Mới trong TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Xem tất cả thay đổi',
 };
 export default system_notice;

@@ -90,5 +90,8 @@ const system_notice: TranslationStrings = {
   'system_notice.pager.counter': '{current} / {total}',
   'system_notice.pager.goto': 'Ava teade {n}',
   'system_notice.pager.position': 'Teade {current} / {total}',
+  'system_notice.fork_changelog.title': 'Uus TREKis: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Vaata kõiki muudatusi',
 };
 export default system_notice;

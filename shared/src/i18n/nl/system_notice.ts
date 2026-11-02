@@ -94,5 +94,8 @@ const system_notice: TranslationStrings = {
     'Plaatsen zoeken, adressen zoeken en routeplanning draaien op eigen servers van TREK, vandaag gesponsord door dataforest cloud. Daar vecht ik elke dag voor, en om het zo te houden is jouw steun nodig.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Steun op Ko-fi',
+  'system_notice.fork_changelog.title': 'Nieuw in TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Bekijk alle wijzigingen',
 };
 export default system_notice;

@@ -86,5 +86,8 @@ const system_notice: TranslationStrings = {
     '地点搜索、地址搜索和路线规划都运行在 TREK 自己的服务器上，目前由 dataforest cloud 赞助。我每天都在为此努力，而要一直保持下去，需要你的支持。',
   'system_notice.release_notes.cta_bmc': '请我喝杯咖啡',
   'system_notice.release_notes.cta_kofi': '在 Ko-fi 上支持',
+  'system_notice.fork_changelog.title': 'TREK 新变化：{title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': '查看所有更改',
 };
 export default system_notice;

@@ -9,7 +9,7 @@ import QRCode from 'qrcode';
 import { randomBytes, createHash } from 'crypto';
 import type { Request, Response } from 'express';
 import { WEB_PUSH_CHANNEL_ID } from '@trek/shared';
-import { getAppUrl, readEnv } from '../../app-config';
+import { getAppUrl, readEnv, runningBuild } from '../../app-config';
 import { JWT_SECRET } from '../../config';
 import { UnitOfWork } from '../database/unit-of-work';
 import { PermissionsService } from '../permissions/permissions.service';
@@ -368,7 +368,7 @@ export class AuthService {
       env_override_oidc_only: readEnv().oidc.only,
       has_users: userCount > 0,
       setup_complete: setupComplete,
-      version,
+      version, build: runningBuild(),
       is_prerelease: version.includes('-pre.'),
       has_maps_key: hasGoogleKey,
       has_amap_key: hasAmapKey,

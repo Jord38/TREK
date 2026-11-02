@@ -36,6 +36,8 @@ const { db } = vi.hoisted(() => {
   tmp.exec('PRAGMA journal_mode = WAL');
   tmp.exec(`CREATE TABLE users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT NOT NULL,
     email TEXT NOT NULL UNIQUE, role TEXT NOT NULL DEFAULT 'user', password_version INTEGER NOT NULL DEFAULT 0);`);
+  // ForkChangelogService records its live times here at boot.
+  tmp.exec('CREATE TABLE app_settings (key TEXT PRIMARY KEY, value TEXT);');
   return { db: tmp };
 });
 
@@ -63,7 +65,7 @@ describe('System-notices e2e (real auth guard + temp SQLite)', () => {
     // MikroOrmModule.forFeature (Plan 3a Task 4) and for SystemNoticesModule's
     // own MikroOrmModule.forFeature (Plan 3f Task 6) — no case here reaches a
     // real repository (SystemNoticesService is overridden below), so the
-    // minimal `users`-only schema above is enough.
+    // minimal schema above (users, plus app_settings for the changelog's boot write) is enough.
     const moduleRef = await Test.createTestingModule({
       imports: [await TestUnitOfWorkModule.forRoot(db), await createTestMikroOrmModule(db), SystemNoticesModule],
     })

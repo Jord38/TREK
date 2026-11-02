@@ -3,6 +3,8 @@
 
 /** The version this bundle was built as (client/package.json), set by `define` in vite.config.js. */
 declare const __TREK_UI_VERSION__: string;
+/** The fork build name this bundle was built as (APP_BUILD), empty for upstream builds. */
+declare const __TREK_UI_BUILD__: string;
 
 /**
  * Big Shoulders Display's weights, imported for their stylesheets alone

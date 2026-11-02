@@ -9,6 +9,7 @@ import {
   connect, disconnect, joinTrip, leaveTrip, getActiveTrips,
   setRefetchCallback, setPreReconnectHook, reconnectNow,
 } from './websocket'
+import { useServerVersionStore } from '../store/serverVersionStore'
 
 class MockWebSocket {
   static CONNECTING = 0
@@ -296,3 +297,13 @@ describe('websocket > logout and reconnect', () => {
   })
 })
 
+
+describe('websocket > welcome', () => {
+  it('FE-WSCORE-020: the welcome frame hands the version and the build to the server version store', async () => {
+    useServerVersionStore.setState({ first: null, reported: null, firstBuild: null, reportedBuild: null })
+    const socket = await openSocket()
+    socket.onmessage?.({ data: JSON.stringify({ type: 'welcome', socketId: 7, version: '5.1.0', build: '5.1.0-jord.3' }) })
+    expect(useServerVersionStore.getState().reported).toBe('5.1.0')
+    expect(useServerVersionStore.getState().reportedBuild).toBe('5.1.0-jord.3')
+  })
+})

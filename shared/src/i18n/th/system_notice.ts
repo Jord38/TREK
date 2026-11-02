@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'การค้นหาสถานที่ การค้นหาที่อยู่ และการคำนวณเส้นทาง ทำงานบนเซิร์ฟเวอร์ของ TREK เอง ซึ่งวันนี้ได้รับการสนับสนุนจาก dataforest cloud ผมสู้เพื่อสิ่งนี้ทุกวัน และการรักษามันไว้แบบนี้ต้องอาศัยการสนับสนุนจากคุณ',
   'system_notice.release_notes.cta_bmc': 'ซื้อกาแฟให้ผม',
   'system_notice.release_notes.cta_kofi': 'สนับสนุนผ่าน Ko-fi',
+  'system_notice.fork_changelog.title': 'ใหม่ใน TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'ดูการเปลี่ยนแปลงทั้งหมด',
 };
 export default system_notice;

@@ -613,6 +613,14 @@ const settings: TranslationStrings = {
   'settings.apiKeys.modal.done': '完成',
   'settings.mcp.deprecated': '已棄用',
   'settings.offline.cache.dateRange': '{start} 至 {end}',
+  'whatsNew.title': '新功能',
+  'whatsNew.hint': 'TREK 最近的更新內容',
+  'whatsNew.empty': '目前沒有新內容。',
+  'whatsNew.errorTitle': '無法載入新功能',
+  'whatsNew.errorBody': '請檢查網路連線後再試一次。',
+  'whatsNew.kind.added': '新增',
+  'whatsNew.kind.changed': '變更',
+  'whatsNew.kind.fixed': '修正',
 };
 
 export default settings;

@@ -90,5 +90,8 @@ const system_notice: TranslationStrings = {
   'system_notice.pager.counter': '{current} / {total}',
   'system_notice.pager.goto': 'Prejsť na oznámenie {n}',
   'system_notice.pager.position': 'Oznámenie {current} z {total}',
+  'system_notice.fork_changelog.title': 'Novinka v TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Zobraziť všetky zmeny',
 };
 export default system_notice;

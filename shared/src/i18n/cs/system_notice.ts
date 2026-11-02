@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'Hledání míst, hledání adres a trasy běží na vlastních serverech TREK, dnes sponzorovaných společností dataforest cloud. Bojuji za to každý den a aby to tak zůstalo, potřebuji vaši podporu.',
   'system_notice.release_notes.cta_bmc': 'Kup mi kávu',
   'system_notice.release_notes.cta_kofi': 'Podpořit na Ko-fi',
+  'system_notice.fork_changelog.title': 'Novinka v TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Zobrazit všechny změny',
 };
 export default system_notice;

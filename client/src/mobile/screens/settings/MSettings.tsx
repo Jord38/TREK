@@ -42,7 +42,7 @@ interface SectionTab {
 export default function MSettings() {
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const { hasIntegrations, hasPlugins, appVersion, activeTab, setActiveTab, managed } = useSettings()
+  const { hasIntegrations, hasPlugins, appVersion, build, activeTab, setActiveTab, managed } = useSettings()
   const [dropOpen, setDropOpen] = useState(false)
 
   const tabs: SectionTab[] = [
@@ -119,7 +119,7 @@ export default function MSettings() {
       {active.id === 'plugins' && hasPlugins && <MSettingsPlugins />}
       {active.id === 'offline' && <MSettingsOffline />}
       {active.id === 'account' && <MSettingsAccount />}
-      {active.id === 'about' && appVersion && <MSettingsAbout appVersion={appVersion} />}
+      {active.id === 'about' && appVersion && <MSettingsAbout appVersion={appVersion} build={build} />}
 
       {managed && appVersion && (
         <p className="mt-8 text-center text-caption text-m-muted">
@@ -129,7 +129,7 @@ export default function MSettings() {
             rel="noopener noreferrer"
             className="no-underline"
           >
-            v{appVersion}
+            {build || `v${appVersion}`}
           </a>
         </p>
       )}

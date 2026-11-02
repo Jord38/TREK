@@ -26,7 +26,7 @@ export default function SettingsPage(): React.ReactElement {
 function SettingsPageDesktop(): React.ReactElement {
   const { t } = useTranslation()
   // Page = wiring container: addon/version loading + active-tab state in the hook.
-  const { hasPlugins, appVersion, activeTab, setActiveTab, managed } = useSettings()
+  const { hasPlugins, appVersion, build, activeTab, setActiveTab, managed } = useSettings()
   // Every tab is its own help screen; a tab without one falls back to the settings overview.
   const helpId = getHelpContext(`settings-${activeTab}`) ? `settings-${activeTab}` : 'settings'
 
@@ -90,7 +90,7 @@ function SettingsPageDesktop(): React.ReactElement {
             {activeTab === 'plugins' && hasPlugins && <PluginSettingsTab />}
             {activeTab === 'offline' && <OfflineTab />}
             {activeTab === 'account' && <AccountTab />}
-            {activeTab === 'about' && appVersion && <AboutTab appVersion={appVersion} />}
+            {activeTab === 'about' && appVersion && <AboutTab appVersion={appVersion} build={build} />}
           </PageSidebar>
         </div>
     </PageShell>

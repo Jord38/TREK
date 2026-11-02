@@ -88,5 +88,8 @@ const system_notice: TranslationStrings = {
     'A helykeresés, a címkeresés és az útvonaltervezés a TREK saját szerverein fut, ma a dataforest cloud támogatásával. Minden nap küzdök ezért, és hogy így is maradjon, szükségem van a támogatásodra.',
   'system_notice.release_notes.cta_bmc': 'Vegyél nekem egy kávét',
   'system_notice.release_notes.cta_kofi': 'Támogass a Ko-fi-n',
+  'system_notice.fork_changelog.title': 'Újdonság a TREK-ben: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Az összes változás megtekintése',
 };
 export default system_notice;

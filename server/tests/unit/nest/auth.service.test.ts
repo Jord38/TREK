@@ -771,6 +771,7 @@ describe('getAppConfig', () => {
     expect(cfg.password_login).toBe(true);
     expect(cfg.has_users).toBe(true);
     expect(typeof cfg.version).toBe('string');
+    expect(cfg.build).toBeNull();
     expect(cfg.permissions).toBeUndefined();
     expect(cfg.notification_channel).toBe('none');
     expect(cfg.available_channels.inapp).toBe(true);

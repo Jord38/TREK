@@ -9,6 +9,8 @@ export type NoticeCondition =
   | { kind: 'dateWindow'; startsAt: string; endsAt?: string }
   | { kind: 'role'; roles: Array<'admin' | 'user'> }
   | { kind: 'addonEnabled'; addonId: string }
+  // The account was created before this changelog entry first went live on this server.
+  | { kind: 'accountCreatedBeforeLive'; entryId: string }
   // Whether the operator of this install owns its configuration. A notice that
   // asks the reader to update, to check a log or to fund the project assumes
   // they run it themselves.
@@ -76,6 +78,7 @@ export interface SystemNotice {
   display: Display;
   severity: Severity;
   titleKey: string;
+  titleParams?: Record<string, string>;
   bodyKey: string;
   bodyParams?: Record<string, string>;
   icon?: string;

@@ -89,5 +89,8 @@ const system_notice: TranslationStrings = {
     'A busca de lugares, a busca de endereços e o cálculo de rotas rodam nos servidores do próprio TREK, hoje patrocinados pela dataforest cloud. Eu luto por isso todos os dias, e para continuar assim preciso do seu apoio.',
   'system_notice.release_notes.cta_bmc': 'Buy me a coffee',
   'system_notice.release_notes.cta_kofi': 'Apoiar no Ko-fi',
+  'system_notice.fork_changelog.title': 'Novo no TREK: {title}',
+  'system_notice.fork_changelog.body': '{list}',
+  'system_notice.fork_changelog.cta': 'Ver todas as alterações',
 };
 export default system_notice;

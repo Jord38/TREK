@@ -68,7 +68,7 @@ describe('PlacesListPreviewService', () => {
       ],
     });
     repo.listAllForTrip.mockResolvedValue([row({ id: 7, name: 'Ramen House', ...TOKYO })]);
-    const res = await service.previewGoogleList('5', 'https://maps.app.goo.gl/x');
+    const res = await service.previewGoogleList(5, 'https://maps.app.goo.gl/x');
     expect(res.kind).toBe('list');
     if (res.kind !== 'list') return;
     expect(res.listName).toBe('Eats');
@@ -84,7 +84,7 @@ describe('PlacesListPreviewService', () => {
       listName: 'L',
       places: [{ name: 'A', ...TOKYO, notes: null, googleFtid: null }],
     });
-    await service.previewGoogleList('5', 'u');
+    await service.previewGoogleList(5, 'u');
     expect(repo.insertPlace).not.toHaveBeenCalled();
     expect(repo.update).not.toHaveBeenCalled();
     expect(repo.delete).not.toHaveBeenCalled();
@@ -92,12 +92,26 @@ describe('PlacesListPreviewService', () => {
 
   it('test03_answers_directions_when_the_link_resolves_to_a_route', async () => {
     readGoogleList.mockResolvedValue({ directions: 'https://www.google.com/maps/dir/a/b' });
-    expect(await service.previewGoogleList('5', 'u')).toEqual({ kind: 'directions' });
+    expect(await service.previewGoogleList(5, 'u')).toEqual({ kind: 'directions' });
     expect(repo.listAllForTrip).not.toHaveBeenCalled();
   });
 
   it('test04_throws_the_providers_status_on_a_read_error', async () => {
     readGoogleList.mockResolvedValue({ error: 'List is private', status: 403 });
-    await expect(service.previewGoogleList('5', 'u')).rejects.toMatchObject({ status: 403 });
+    await expect(service.previewGoogleList(5, 'u')).rejects.toMatchObject({ status: 403 });
+  });
+
+  it('test05_turns_a_failed_read_into_a_400_like_the_direct_import', async () => {
+    readGoogleList.mockRejectedValue(new Error('socket hang up'));
+    await expect(service.previewGoogleList(5, 'u')).rejects.toMatchObject({
+      status: 400,
+      message: 'Failed to import Google Maps list. Make sure the list is shared publicly.',
+    });
+  });
+
+  it('test06_reads_the_trip_places_by_the_numeric_trip_id', async () => {
+    readGoogleList.mockResolvedValue({ listName: 'L', places: [] });
+    await service.previewGoogleList(5, 'u');
+    expect(repo.listAllForTrip).toHaveBeenCalledWith(5);
   });
 });

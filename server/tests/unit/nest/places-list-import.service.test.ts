@@ -80,12 +80,15 @@ describe('PlacesListImportService', () => {
     expect(broadcast).toHaveBeenCalledWith(String(tripId), 'place:created', { place: res.places[0] }, 'sock-1');
   });
 
-  it('test03_enriches_the_created_places_after_the_transaction_only_when_asked', async () => {
-    await service.commitGoogleList(tripId, request({ places: [ramen] }), {});
-    expect(enrichImportedList).not.toHaveBeenCalled();
-    await service.commitGoogleList(tripId, request({ places: [ramen], enrich: true }), { userId: 5 });
+  it('test03_backfills_addresses_of_created_places_always_and_enriches_only_when_asked', async () => {
+    await service.commitGoogleList(tripId, request({ places: [ramen] }), { userId: 5 });
     expect(enrichImportedList).toHaveBeenCalledTimes(1);
-    expect(enrichImportedList.mock.calls[0][2]).toMatchObject({ enrich: true, userId: 5 });
+    expect(enrichImportedList.mock.calls[0][2]).toMatchObject({ enrich: false, userId: 5 });
+    await service.commitGoogleList(tripId, request({ places: [ramen], enrich: true }), { userId: 5 });
+    expect(enrichImportedList).toHaveBeenCalledTimes(2);
+    expect(enrichImportedList.mock.calls[1][2]).toMatchObject({ enrich: true, userId: 5 });
+    await service.commitGoogleList(tripId, request({ places: [] }), { userId: 5 });
+    expect(enrichImportedList).toHaveBeenCalledTimes(2);
   });
 
   it('test04_link_attaches_the_id_only_to_a_place_that_has_none', async () => {

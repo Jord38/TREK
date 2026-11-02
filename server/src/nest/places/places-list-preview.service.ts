@@ -15,8 +15,8 @@ export class PlacesListPreviewService {
     @InjectRepository(Places) private readonly placesRepo: PlacesRepository,
   ) {}
 
-  async previewGoogleList(tripId: string, url: string): Promise<PlaceListPreviewResponse> {
-    const read = await this.placeImport.readGoogleList(url);
+  async previewGoogleList(tripId: number, url: string): Promise<PlaceListPreviewResponse> {
+    const read = await this.readList(url);
     if ('error' in read) throw new DomainError(read.status, read.error);
     if ('directions' in read) return { kind: 'directions' };
 
@@ -41,5 +41,16 @@ export class PlacesListPreviewService {
       ...this.placeImport.classifyListPlace(p, targets),
     }));
     return { kind: 'list', listName: read.listName, places };
+  }
+
+  /** A network failure or timeout gets the direct import's 400 wording, not a 500. */
+  private async readList(url: string): ReturnType<PlaceImportService['readGoogleList']> {
+    try {
+      return await this.placeImport.readGoogleList(url);
+    } catch (err: unknown) {
+      if (err instanceof DomainError) throw err;
+      console.error('[Places] Google list preview error:', err instanceof Error ? err.message : err);
+      throw new DomainError(400, 'Failed to import Google Maps list. Make sure the list is shared publicly.');
+    }
   }
 }

@@ -314,7 +314,7 @@ export class PlacesController {
   async previewGoogle(@CurrentUser() user: User, @Param('tripId') tripId: string, @Body() body: PlaceListPreviewDto) {
     const trip = await this.requireTrip(tripId, user);
     await this.requireEdit(trip, user);
-    return this.listPreview.previewGoogleList(tripId, body.url);
+    return this.listPreview.previewGoogleList(trip.tid, body.url);
   }
 
   @Post('import/google-list/commit')

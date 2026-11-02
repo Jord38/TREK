@@ -86,8 +86,8 @@ export class PlacesListImportService {
       this.places.broadcast(trip, 'place:updated', { place }, opts.socketId);
       await this.places.onUpdated(place.id);
     }
-    if (created.length && body.enrich) {
-      void this.places.enrichImportedList(trip, created as EnrichablePlace[], { ...opts, enrich: true });
+    if (created.length) {
+      void this.places.enrichImportedList(trip, created as EnrichablePlace[], { ...opts, enrich: !!body.enrich });
     }
 
     return {

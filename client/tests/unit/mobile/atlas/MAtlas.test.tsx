@@ -225,7 +225,7 @@ describe('MAtlas', () => {
   it('FE-MOB-ATLASSCR-017: the planned pill stays away while nothing is planned', () => {
     render(<MAtlas />);
 
-    expect(screen.queryByRole('switch')).not.toBeInTheDocument();
+    expect(screen.queryByRole('switch', { name: 'atlas.showPlanned' })).not.toBeInTheDocument();
     expect(screen.queryByText('atlas.planned')).not.toBeInTheDocument();
   });
 
@@ -243,6 +243,25 @@ describe('MAtlas', () => {
 
     fireEvent.click(toggle);
     expect(atlas.togglePlanned).toHaveBeenCalled();
+  });
+
+  it('FE-MOB-ATLASSCR-021: the place names pill is always there and its switch flips the labels', () => {
+    const atlas = setAtlas({});
+    render(<MAtlas />);
+
+    expect(screen.getByText('atlas.placeNames')).toBeInTheDocument();
+    const toggle = screen.getByRole('switch', { name: 'atlas.showPlaceNames' });
+    expect(toggle).toHaveAttribute('aria-checked', 'false');
+
+    fireEvent.click(toggle);
+    expect(atlas.togglePlaceNames).toHaveBeenCalled();
+  });
+
+  it('FE-MOB-ATLASSCR-022: no place names pill when the basemap cannot hide its labels', () => {
+    setAtlas({ canShowPlaceNames: false });
+    render(<MAtlas />);
+
+    expect(screen.queryByText('atlas.placeNames')).not.toBeInTheDocument();
   });
 
   it('FE-MOB-ATLASSCR-019: suggestions rank the countries you have been to above the planned ones', async () => {

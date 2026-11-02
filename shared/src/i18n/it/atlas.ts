@@ -69,6 +69,8 @@ const atlas: TranslationStrings = {
   'atlas.searchPlaces': 'Luoghi',
   'atlas.planned': 'In programma',
   'atlas.showPlanned': 'Mostra i paesi in programma',
+  'atlas.placeNames': 'Nomi dei luoghi',
+  'atlas.showPlaceNames': 'Mostra i nomi dei luoghi',
   'atlas.plannedFor': 'In programma per',
   'atlas.antarctica': 'Antartide',
   'atlas.regionPlacesLabel': 'luoghi',

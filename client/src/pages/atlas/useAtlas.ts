@@ -2,9 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState, useRef } from 'react'
 import { useNavigate } from 'react-router'
 import { getIntlLanguage, getLocaleForLanguage, useTranslation } from '../../i18n'
 import { useSettingsStore } from '../../store/settingsStore'
+import { useStoredToggle } from '../../hooks/useStoredToggle'
+import { useAtlasPlaceNames } from './useAtlasPlaceNames'
 import { useTileUrl } from '../../hooks/useTileUrl'
 import { OFM_DARK, OFM_POSITRON } from '../../constants/mapDefaults'
-import { attachVectorBasemap, detachBasemapLayer, hideLabelLayers, restyleBasemap, type BasemapLayer } from '../../components/Map/VectorBasemap'
+import { attachVectorBasemap, detachBasemapLayer, restyleBasemap, setLabelLayersVisible, type BasemapLayer } from '../../components/Map/VectorBasemap'
 import { isVectorStyle } from '../../utils/tileUrl'
 import apiClient, { mapsApi, pluginsApi, type PluginAtlasLayer } from '../../api/client'
 import L from 'leaflet'
@@ -104,14 +106,8 @@ export function useAtlas() {
   const [showRegions, setShowRegions] = useState(false)
   // Countries you only plan to visit stay off the map until asked for — the atlas is a
   // record of where you have been, not of where you booked a flight to (#1048).
-  const [showPlanned, setShowPlanned] = useState<boolean>(() => {
-    try { return localStorage.getItem(PLANNED_KEY) === '1' } catch { return false }
-  })
-  const togglePlanned = () => setShowPlanned(v => {
-    const next = !v
-    try { localStorage.setItem(PLANNED_KEY, next ? '1' : '0') } catch { /* private mode — keep the toggle working anyway */ }
-    return next
-  })
+  const [showPlanned, togglePlanned] = useStoredToggle(PLANNED_KEY)
+  const { showPlaceNames, togglePlaceNames, showPlaceNamesRef, canShowPlaceNames, onBasemapAttached } = useAtlasPlaceNames(glLayerRef)
   const [regionGeoLoaded, setRegionGeoLoaded] = useState(0)
   const regionTooltipRef = useRef<HTMLDivElement>(null)
   const loadCountryDetailRef = useRef<(code: string) => void>(() => {})
@@ -356,10 +352,12 @@ export function useAtlas() {
     // One layer, not two. The second raster layer existed to warm the HTTP cache
     // of neighbouring zoom levels; a vector basemap scales what it already has, so
     // a second one would only cost a second WebGL context and a second copy of the
-    // tiles. Labels are hidden because the country fills carry the names here.
+    // tiles. Labels follow the place names switch, read once the layer is in.
     if (isVectorStyle(tileUrlRef.current)) {
       cancelledRef.current = false
-      void attachVectorBasemap(map, tileUrlRef.current, glLayerRef, () => cancelledRef.current, { hideLabels: true })
+      void attachVectorBasemap(map, tileUrlRef.current, glLayerRef, () => cancelledRef.current).then(() => {
+        if (!cancelledRef.current) onBasemapAttached()
+      })
     } else {
       const baseTiles = L.tileLayer(tileUrlRef.current, {
         maxZoom: 10,
@@ -435,7 +433,7 @@ export function useAtlas() {
       detachBasemapLayer(glLayerRef.current)
       glLayerRef.current = null
     }
-  }, [dark, loading])
+  }, [dark, loading, onBasemapAttached])
 
   // Retile in place. A rebuild would drop every layer the effects below hold a ref
   // to — the country layer is only re-rendered when its own data changes, so the map
@@ -449,11 +447,11 @@ export function useAtlas() {
       // setStyle drops the layer list, and style.load fires again with the new
       // one, so the label rule has to be re-armed rather than assumed. Both calls
       // are no-ops on the raster stand-in, which has neither styles nor layers.
-      hideLabelLayers(layer)
+      setLabelLayersVisible(layer, showPlaceNamesRef.current)
       return
     }
     for (const layer of tileLayersRef.current) layer.setUrl(tileUrl)
-  }, [tileUrl])
+  }, [tileUrl, showPlaceNamesRef])
 
   // Render GeoJSON countries
   useEffect(() => {
@@ -1152,7 +1150,7 @@ export function useAtlas() {
     mapRef, regionTooltipRef, panelRef, glareRef, borderGlareRef,
     handlePanelMouseMove, handlePanelMouseLeave,
     data, setData, stats, countries, selectedCountry, countryDetail,
-    visitedCountries, visibleCountries, showPlanned, togglePlanned,
+    visitedCountries, visibleCountries, showPlanned, togglePlanned, showPlaceNames, togglePlaceNames, canShowPlaceNames,
     loadCountryDetail, handleUnmarkCountry, select_country_from_search,
     visitedRegions, setVisitedRegions, regionsVisited, placesOpen, setPlacesOpen,
     atlas_country_search, set_atlas_country_search,

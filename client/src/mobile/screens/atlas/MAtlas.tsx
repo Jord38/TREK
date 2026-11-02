@@ -38,6 +38,9 @@ export default function MAtlas() {
     visitedCountries,
     showPlanned,
     togglePlanned,
+    showPlaceNames,
+    togglePlaceNames,
+    canShowPlaceNames,
     bucketList,
     selectedCountry,
     countryDetail,
@@ -141,6 +144,12 @@ export default function MAtlas() {
             </span>
             <span className="truncate text-[0.78125rem] font-bold text-m-ink">{t('dawarich.title')}</span>
           </button>
+        )}
+        {canShowPlaceNames && (
+          <div className="flex h-[38px] shrink-0 items-center gap-2 rounded-full border border-[color:var(--m-gbr)] bg-[color:var(--m-sheet)] px-3 shadow-[0_5px_12px_-8px_rgba(0,0,0,.18)]">
+            <span className="text-caption font-bold text-m-ink">{t('atlas.placeNames')}</span>
+            <MToggle checked={showPlaceNames} onChange={() => togglePlaceNames()} ariaLabel={t('atlas.showPlaceNames')} />
+          </div>
         )}
         {/* Only worth the space once there is something planned to reveal. */}
         {plannedCount > 0 && (

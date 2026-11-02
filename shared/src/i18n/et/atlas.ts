@@ -69,6 +69,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited.one': 'Külastatud koht',
   'atlas.planned': 'Plaanis',
   'atlas.showPlanned': 'Näita plaanis olevaid riike',
+  'atlas.placeNames': 'Kohanimed',
+  'atlas.showPlaceNames': 'Näita kohanimesid',
   'atlas.plannedFor': 'Plaanitud ajaks',
   'atlas.antarctica': 'Antarktika',
   'atlas.regionPlacesLabel': 'kohta',

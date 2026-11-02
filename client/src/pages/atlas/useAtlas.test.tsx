@@ -1141,6 +1141,54 @@ describe('useAtlas', () => {
     });
   });
 
+  describe('place names', () => {
+    it('FE-HOOK-ATLAS-062: place names start hidden', async () => {
+      await mountAtlas();
+
+      expect(atlas.showPlaceNames).toBe(false);
+    });
+
+    it('FE-HOOK-ATLAS-063: a stored preference brings the place names back on mount', async () => {
+      localStorage.setItem('trek_atlas_show_place_names', '1');
+      await mountAtlas();
+
+      expect(atlas.showPlaceNames).toBe(true);
+    });
+
+    it('FE-HOOK-ATLAS-064: toggling flips the place names and remembers the choice', async () => {
+      await mountAtlas();
+
+      act(() => atlas.togglePlaceNames());
+      expect(atlas.showPlaceNames).toBe(true);
+      expect(localStorage.getItem('trek_atlas_show_place_names')).toBe('1');
+
+      act(() => atlas.togglePlaceNames());
+      expect(atlas.showPlaceNames).toBe(false);
+      expect(localStorage.getItem('trek_atlas_show_place_names')).toBe('0');
+    });
+
+    it('FE-HOOK-ATLAS-065: a storage that refuses reads and writes still leaves a working toggle', async () => {
+      const getSpy = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new DOMException('denied', 'SecurityError');
+      });
+      const setSpy = vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => {
+        throw new DOMException('denied', 'SecurityError');
+      });
+
+      try {
+        await mountAtlas();
+        expect(atlas.showPlaceNames).toBe(false);
+
+        act(() => atlas.togglePlaceNames());
+
+        expect(atlas.showPlaceNames).toBe(true);
+      } finally {
+        getSpy.mockRestore();
+        setSpy.mockRestore();
+      }
+    });
+  });
+
   describe('planned countries (#1048)', () => {
     it('FE-HOOK-ATLAS-031: the planned layer starts off and only lists the visited countries', async () => {
       await mountAtlas({ stats: plannedStatsResponse });

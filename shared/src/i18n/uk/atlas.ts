@@ -89,6 +89,8 @@ const atlas: TranslationStrings = {
   'atlas.bucketDuplicate': 'Вже у вашому списку бажань',
   'atlas.planned': 'Заплановано',
   'atlas.showPlanned': 'Показати заплановані країни',
+  'atlas.placeNames': 'Назви місць',
+  'atlas.showPlaceNames': 'Показати назви місць',
   'atlas.plannedFor': 'Заплановано на',
   'atlas.antarctica': 'Антарктида',
   'atlas.regionPlacesLabel': 'місця',

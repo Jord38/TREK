@@ -58,6 +58,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited': 'สถานที่ที่เยี่ยมชม',
   'atlas.planned': 'วางแผนแล้ว',
   'atlas.showPlanned': 'แสดงประเทศที่วางแผนไว้',
+  'atlas.placeNames': 'ชื่อสถานที่',
+  'atlas.showPlaceNames': 'แสดงชื่อสถานที่',
   'atlas.plannedFor': 'วางแผนไว้สำหรับ',
   'atlas.antarctica': 'แอนตาร์กติกา',
   'atlas.regionPlacesLabel': 'แห่ง',

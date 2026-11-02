@@ -49,7 +49,7 @@ function AtlasPageDesktop(): React.ReactElement {
     mapRef, regionTooltipRef, panelRef, glareRef, borderGlareRef,
     handlePanelMouseMove, handlePanelMouseLeave,
     data, setData, stats, countries, selectedCountry, countryDetail,
-    showPlanned, togglePlanned,
+    showPlanned, togglePlanned, showPlaceNames, togglePlaceNames, canShowPlaceNames,
     loadCountryDetail, handleUnmarkCountry, select_country_from_search,
     visitedRegions, setVisitedRegions, regionsVisited, placesOpen, setPlacesOpen,
     atlas_country_search, set_atlas_country_search,
@@ -130,6 +130,9 @@ function AtlasPageDesktop(): React.ReactElement {
           showPlanned={showPlanned}
           onToggle={togglePlanned}
           plannedCount={stats.totalCountriesPlanned || 0}
+          showPlaceNames={showPlaceNames}
+          onTogglePlaceNames={togglePlaceNames}
+          canShowPlaceNames={canShowPlaceNames}
         />
 
         {placesOpen && selectedCountry && countryDetail && (

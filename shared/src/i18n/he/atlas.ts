@@ -79,6 +79,8 @@ const atlas: TranslationStrings = {
   'atlas.placesVisited.two': 'מקומות שביקרתם בהם',
   'atlas.planned': 'מתוכנן',
   'atlas.showPlanned': 'הצגת מדינות מתוכננות',
+  'atlas.placeNames': 'שמות מקומות',
+  'atlas.showPlaceNames': 'הצגת שמות מקומות',
   'atlas.plannedFor': 'מתוכנן ל-',
   'atlas.antarctica': 'אנטארקטיקה',
   'atlas.regionPlacesLabel': 'מקומות',

@@ -114,15 +114,32 @@ describe('list matching', () => {
       expect(r.match).toBeNull();
     });
 
-    it('flags a contained core within 500 m as check by part', () => {
-      const r = matchListPlace(candidate('Round One Stadium Sennichimae', 200), [target({ name: 'Round One' })]);
+    it('flags a contained core within 500 m as check by part when it is at least 60% of the longer core', () => {
+      const r = matchListPlace(candidate('Blue Note Jazz', 200), [target({ name: 'Blue Note' })]);
       expect(r.bucket).toBe('check');
       expect(r.match?.reason).toBe('part');
     });
 
-    it('treats a contained core 800 m away as new', () => {
+    it('treats a short contained core within 500 m as new with a similar-nearby hint', () => {
+      const r = matchListPlace(candidate('Round One Stadium Sennichimae', 200), [target({ id: 4, name: 'Round One' })]);
+      expect(r.bucket).toBe('new');
+      expect(r.match).toBeNull();
+      expect(r.hint).toMatchObject({ kind: 'similar-nearby', placeId: 4, name: 'Round One' });
+      expect(r.hint?.distanceM).toBeCloseTo(200, 0);
+    });
+
+    it('prefers a similar-nearby hint over a next-to hint', () => {
+      const r = matchListPlace(candidate('Round One Stadium Sennichimae', 10), [
+        target({ id: 9, name: 'Old Temple' }),
+        target({ id: 4, name: 'Round One', lat: metresNorth(210) }),
+      ]);
+      expect(r.hint).toMatchObject({ kind: 'similar-nearby', placeId: 4 });
+    });
+
+    it('treats a contained core 800 m away as new without a hint', () => {
       const r = matchListPlace(candidate('Round One Stadium Sennichimae', 800), [target({ name: 'Round One' })]);
       expect(r.bucket).toBe('new');
+      expect(r.hint).toBeNull();
     });
 
     it('never matches containment with a core under 4 characters', () => {

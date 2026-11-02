@@ -18,10 +18,14 @@ export function matchReason(place: ListPreviewPlace, t: Translate, language: str
     });
   }
   if (hint) {
-    return t(hint.kind === 'same-name-far' ? 'places.listPreview.hintSameNameFar' : 'places.listPreview.hintNextTo', {
-      name: hint.name,
-      distance: formatListDistance(hint.distanceM, language),
-    });
+    return t(
+      hint.kind === 'same-name-far'
+        ? 'places.listPreview.hintSameNameFar'
+        : hint.kind === 'similar-nearby'
+          ? 'places.listPreview.hintSimilarNearby'
+          : 'places.listPreview.hintNextTo',
+      { name: hint.name, distance: formatListDistance(hint.distanceM, language) }
+    );
   }
   return null;
 }

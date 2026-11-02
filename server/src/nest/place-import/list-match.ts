@@ -23,7 +23,7 @@ export interface MatchCandidate {
 }
 
 export type MatchReason = 'id' | 'name' | 'core' | 'core-far' | 'part';
-export type HintKind = 'same-name-far' | 'next-to';
+export type HintKind = 'same-name-far' | 'similar-nearby' | 'next-to';
 
 export interface ListMatch {
   bucket: 'new' | 'check' | 'existing';
@@ -36,6 +36,8 @@ export const SAME_CORE_MAX_M = 1000;
 export const CHECK_CORE_MAX_M = 3000;
 export const PART_MAX_M = 500;
 export const PART_MIN_CHARS = 4;
+/** Below this share of the longer core, a contained name is a different place nearby ("Round One" in "Round One Stadium Sennichimae"). */
+export const PART_MIN_SHARE = 0.6;
 export const NEXT_TO_MAX_M = 25;
 
 const EARTH_RADIUS_M = 6_371_000;
@@ -104,10 +106,13 @@ function distanceMetres(aLat: number, aLng: number, bLat: number, bLng: number):
 }
 
 const RANK = { new: 0, check: 1, existing: 2 } as const;
+const HINT_RANK: Record<HintKind, number> = { 'next-to': 0, 'similar-nearby': 1, 'same-name-far': 2 };
 
-function isPart(a: string, b: string): boolean {
+/** How much of the longer core the shorter one covers when it is contained in it, else 0. */
+function partShare(a: string, b: string): number {
   const [short, long] = a.length <= b.length ? [a, b] : [b, a];
-  return short.length >= PART_MIN_CHARS && long.includes(short);
+  if (short.length < PART_MIN_CHARS || !long.includes(short)) return 0;
+  return short.length / long.length;
 }
 
 type Found = NonNullable<ListMatch['match']>;
@@ -137,8 +142,12 @@ function judgeTarget(
   if (sameNorm && distanceM <= SAME_NAME_MAX_M) return { bucket: 'existing', found: make('name'), hint: null };
   if (sameCore && distanceM <= SAME_CORE_MAX_M) return { bucket: 'existing', found: make('core'), hint: null };
   if (sameCore && distanceM <= CHECK_CORE_MAX_M) return { bucket: 'check', found: make('core-far'), hint: null };
-  if (!sameCore && isPart(names.core, tCore) && distanceM <= PART_MAX_M) {
+  const share = sameCore ? 0 : partShare(names.core, tCore);
+  if (share >= PART_MIN_SHARE && distanceM <= PART_MAX_M) {
     return { bucket: 'check', found: make('part'), hint: null };
+  }
+  if (share > 0 && distanceM <= PART_MAX_M) {
+    return { ...none, hint: { kind: 'similar-nearby', placeId: t.id, name: placeName, distanceM } };
   }
   if (sameNorm) {
     return { ...none, hint: { kind: 'same-name-far', placeId: t.id, name: placeName, distanceM } };
@@ -151,7 +160,7 @@ function judgeTarget(
 
 function betterHint(a: ListMatch['hint'], b: ListMatch['hint']): ListMatch['hint'] {
   if (!a || !b) return a ?? b;
-  if (a.kind !== b.kind) return a.kind === 'same-name-far' ? a : b;
+  if (a.kind !== b.kind) return HINT_RANK[a.kind] > HINT_RANK[b.kind] ? a : b;
   return b.distanceM < a.distanceM ? b : a;
 }
 

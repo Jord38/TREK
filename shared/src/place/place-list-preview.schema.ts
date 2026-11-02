@@ -15,7 +15,7 @@ export type PlaceListPreviewRequest = z.infer<typeof placeListPreviewRequestSche
 
 export const listMatchBucketSchema = z.enum(['new', 'check', 'existing']);
 export const listMatchReasonSchema = z.enum(['id', 'name', 'core', 'core-far', 'part']);
-export const listMatchHintKindSchema = z.enum(['same-name-far', 'next-to']);
+export const listMatchHintKindSchema = z.enum(['same-name-far', 'similar-nearby', 'next-to']);
 
 export const listMatchSchema = z.object({
   bucket: listMatchBucketSchema,

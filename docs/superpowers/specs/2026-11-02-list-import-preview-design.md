@@ -92,7 +92,8 @@ In order, first hit wins:
 | Normalized names equal, pins within 2 km | Already in trip |
 | Core names equal, pins within 1 km | Already in trip |
 | Core names equal, pins 1 km to 3 km apart | To check ("same name, N km apart, maybe your pin is off") |
-| One core contains the other (shorter one at least 4 characters), within 500 m | To check |
+| One core contains the other (shorter one at least 4 characters and at least 60% of the longer), within 500 m | To check |
+| One core contains the other but covers less than 60% of it, within 500 m | New, with hint ("similar name to your <name>, N m away") |
 | Normalized names equal but more than 3 km apart | New, with hint ("your trip has one in <place>, N km away") |
 | Unrelated names, pins within 25 m | New, with hint ("right next to your <name>") |
 | Otherwise | New |

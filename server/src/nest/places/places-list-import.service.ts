@@ -82,7 +82,10 @@ export class PlacesListImportService {
 
     const trip = String(tripId);
     for (const place of created) this.places.broadcast(trip, 'place:created', { place }, opts.socketId);
-    for (const place of moved) this.places.broadcast(trip, 'place:updated', { place }, opts.socketId);
+    for (const place of moved) {
+      this.places.broadcast(trip, 'place:updated', { place }, opts.socketId);
+      await this.places.onUpdated(place.id);
+    }
     if (created.length && body.enrich) {
       void this.places.enrichImportedList(trip, created as EnrichablePlace[], { ...opts, enrich: true });
     }

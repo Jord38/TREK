@@ -14,6 +14,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 const testDb = createSnapshotTestDb();
 const broadcast = vi.fn();
+const onUpdated = vi.fn().mockResolvedValue(undefined);
 const enrichImportedList = vi.fn().mockResolvedValue(undefined);
 const orm = () => sharedTestOrm(testDb);
 
@@ -40,7 +41,7 @@ beforeAll(async () => {
     imports: [],
     providers: [
       PlacesListImportService,
-      { provide: PlacesService, useValue: { broadcast, enrichImportedList } },
+      { provide: PlacesService, useValue: { broadcast, enrichImportedList, onUpdated } },
       { provide: getRepositoryToken(Places), useValue: repo },
     ],
   });
@@ -55,6 +56,7 @@ afterAll(async () => {
 beforeEach(() => {
   resetTestDb(testDb);
   broadcast.mockClear();
+  onUpdated.mockClear();
   enrichImportedList.mockClear();
   const { user } = createUser(testDb);
   tripId = createTrip(testDb, user.id).id;
@@ -176,14 +178,14 @@ describe('PlacesListImportService', () => {
     expect(broadcast).toHaveBeenCalledTimes(1);
   });
 
-  it('test09_a_failing_insert_leaves_no_link_or_pin_move_behind', async () => {
+  it('test09_a_failing_later_write_rolls_back_the_inserts_and_the_link', async () => {
     const bare = createPlace(testDb, tripId, { name: 'Bare', lat: 1, lng: 2 });
-    const spy = vi.spyOn((await orm()).repo(Places), 'insertPlace').mockRejectedValueOnce(new Error('disk full'));
+    const spy = vi.spyOn((await orm()).repo(Places), 'updatePlace').mockRejectedValueOnce(new Error('disk full'));
     await expect(
       service.commitGoogleList(
         tripId,
         request({
-          places: [ramen],
+          places: [ramen, { ...ramen, name: 'Second' }],
           link: [{ placeId: bare.id, googleFtid: '0xnew' }],
           movePin: [{ placeId: bare.id, lat: 9, lng: 9, googleFtid: null }],
         }),
@@ -194,5 +196,21 @@ describe('PlacesListImportService', () => {
     expect(await findRow(await orm(), Places, { id: bare.id })).toMatchObject({ lat: 1, lng: 2, google_ftid: null });
     expect(await findRows(await orm(), Places, { trip: tripId })).toHaveLength(1);
     expect(broadcast).not.toHaveBeenCalled();
+    expect(onUpdated).not.toHaveBeenCalled();
+  });
+
+  it('test10_runs_the_journey_sync_for_moved_pins_only', async () => {
+    const bare = createPlace(testDb, tripId, { name: 'Bare' });
+    const pin = createPlace(testDb, tripId, { name: 'Pin' });
+    await service.commitGoogleList(
+      tripId,
+      request({
+        places: [ramen],
+        link: [{ placeId: bare.id, googleFtid: '0xnew' }],
+        movePin: [{ placeId: pin.id, lat: 3, lng: 4, googleFtid: null }],
+      }),
+      {},
+    );
+    expect(onUpdated.mock.calls).toEqual([[pin.id]]);
   });
 });

@@ -1,9 +1,9 @@
 {
   "src": {
     "@typescript-eslint/no-non-null-assertion": 380,
-    "@typescript-eslint/no-misused-promises": 847,
+    "@typescript-eslint/no-misused-promises": 845,
     "no-console": 88,
-    "complexity": 218,
+    "complexity": 217,
     "@typescript-eslint/no-explicit-any": 144,
     "trek/no-swallowed-catch": 128,
     "max-params": 32,

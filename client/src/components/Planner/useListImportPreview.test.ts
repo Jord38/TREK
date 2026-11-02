@@ -1,6 +1,6 @@
-// FE-PLANNER-LISTPREV-001 to FE-PLANNER-LISTPREV-012: the choices held over a previewed Google list.
+// FE-PLANNER-LISTPREV-001 to FE-PLANNER-LISTPREV-013: the choices held over a previewed Google list.
 import { act, renderHook } from '@testing-library/react';
-import type { ListPreviewPlace, PlaceListPreviewResponse } from '@trek/shared';
+import { placeListCommitRequestSchema, type ListPreviewPlace, type PlaceListPreviewResponse } from '@trek/shared';
 import { describe, expect, it } from 'vitest';
 
 import { useListImportPreview } from './useListImportPreview';
@@ -154,5 +154,15 @@ describe('useListImportPreview', () => {
     const { result } = renderHook(() => useListImportPreview(null, 'en'));
     expect(result.current.countries).toEqual([]);
     expect(result.current.counts.inCountries).toBe(0);
+  });
+
+  it('FE-PLANNER-LISTPREV-013: toCommit cuts a name, note or list name to what the commit route accepts', () => {
+    const { result } = setup([row('0', { name: 'N'.repeat(250), notes: 'x'.repeat(2500) })]);
+    act(() => result.current.toggleCountry('NL'));
+    const request = result.current.toCommit('L'.repeat(300), false);
+    expect(request.listName).toHaveLength(200);
+    expect(request.places[0].name).toHaveLength(200);
+    expect(request.places[0].notes).toHaveLength(2000);
+    expect(placeListCommitRequestSchema.safeParse(request).success).toBe(true);
   });
 });

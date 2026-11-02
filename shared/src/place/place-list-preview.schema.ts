@@ -63,30 +63,45 @@ export const placeListPreviewResponseSchema = z.discriminatedUnion('kind', [
 ]);
 export type PlaceListPreviewResponse = z.infer<typeof placeListPreviewResponseSchema>;
 
+/** The create route's limits (`validateLengths`), so a list import cannot write longer text than a hand-made place. */
+export const LIST_COMMIT_NAME_MAX = 200;
+export const LIST_COMMIT_NOTES_MAX = 2000;
+export const LIST_COMMIT_MAX_ITEMS = 1000;
+
+const latitude = z.number().min(-90).max(90);
+const longitude = z.number().min(-180).max(180);
+
 const commitPlaceSchema = z.object({
-  name: z.string().min(1),
-  lat: z.number(),
-  lng: z.number(),
-  notes: z.string().nullable(),
+  name: z.string().min(1).max(LIST_COMMIT_NAME_MAX),
+  lat: latitude,
+  lng: longitude,
+  notes: z.string().max(LIST_COMMIT_NOTES_MAX).nullable(),
   googleFtid: z.string().nullable(),
 });
 
-/** What the preview's Import sends back: the ticked places, the matches to link, the pins to move. */
+/**
+ * What the preview's Import sends back: the ticked places, the matches to link, the pins to move.
+ *
+ * The global 100 kB JSON body limit (server bootstrap) is usually the tighter cap: a request
+ * of 1000 places with long notes is refused with 413 before it reaches this schema.
+ */
 export const placeListCommitRequestSchema = z.object({
-  listName: z.string(),
+  listName: z.string().max(LIST_COMMIT_NAME_MAX),
   enrich: z.boolean().optional(),
-  places: z.array(commitPlaceSchema),
+  places: z.array(commitPlaceSchema).max(LIST_COMMIT_MAX_ITEMS),
   /** Existing places that receive the Google id of the list place they matched. */
-  link: z.array(z.object({ placeId: z.number().int(), googleFtid: z.string().min(1) })),
+  link: z.array(z.object({ placeId: z.number().int(), googleFtid: z.string().min(1) })).max(LIST_COMMIT_MAX_ITEMS),
   /** Existing places whose pin moves to Google's location. */
-  movePin: z.array(
-    z.object({
-      placeId: z.number().int(),
-      lat: z.number(),
-      lng: z.number(),
-      googleFtid: z.string().nullable(),
-    }),
-  ),
+  movePin: z
+    .array(
+      z.object({
+        placeId: z.number().int(),
+        lat: latitude,
+        lng: longitude,
+        googleFtid: z.string().nullable(),
+      }),
+    )
+    .max(LIST_COMMIT_MAX_ITEMS),
 });
 export type PlaceListCommitRequest = z.infer<typeof placeListCommitRequestSchema>;
 

@@ -1,4 +1,10 @@
-import type { ListPreviewPlace, PlaceListCommitRequest, PlaceListPreviewResponse } from '@trek/shared';
+import {
+  LIST_COMMIT_NAME_MAX,
+  LIST_COMMIT_NOTES_MAX,
+  type ListPreviewPlace,
+  type PlaceListCommitRequest,
+  type PlaceListPreviewResponse,
+} from '@trek/shared';
 import { useMemo, useState } from 'react';
 
 import { countryNamer } from '../../utils/countryName';
@@ -94,15 +100,16 @@ export function useListImportPreview(preview: ListPreviewData | null, language: 
   };
 
   const toCommit = (listName: string, enrich: boolean): PlaceListCommitRequest => {
+    // Google allows longer names and notes than a TREK place holds; the route refuses them whole.
     const toPlace = ({ name, lat, lng, notes, googleFtid }: ListPreviewPlace) => ({
-      name,
+      name: name.slice(0, LIST_COMMIT_NAME_MAX),
       lat,
       lng,
-      notes,
+      notes: notes === null ? null : notes.slice(0, LIST_COMMIT_NOTES_MAX),
       googleFtid,
     });
     return {
-      listName,
+      listName: listName.slice(0, LIST_COMMIT_NAME_MAX),
       enrich,
       places: inCountries.filter((p) => ticked.has(p.key)).map(toPlace),
       link: inCountries.flatMap((p) =>

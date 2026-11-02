@@ -65,4 +65,32 @@ describe('placeListCommitRequestSchema', () => {
     });
     expect(res.success).toBe(false);
   });
+
+  const place = { name: 'Cafe', lat: 35, lng: 139, notes: null, googleFtid: null };
+  const commit = (over: Record<string, unknown>) =>
+    placeListCommitRequestSchema.safeParse({ listName: 'Eats', places: [], link: [], movePin: [], ...over }).success;
+
+  it('accepts a name of 200 and notes of 2000 characters', () => {
+    expect(commit({ places: [{ ...place, name: 'n'.repeat(200), notes: 'x'.repeat(2000) }] })).toBe(true);
+  });
+
+  it('rejects a name over 200, notes over 2000 or a list name over 200 characters', () => {
+    expect(commit({ places: [{ ...place, name: 'n'.repeat(201) }] })).toBe(false);
+    expect(commit({ places: [{ ...place, notes: 'x'.repeat(2001) }] })).toBe(false);
+    expect(commit({ listName: 'l'.repeat(201) })).toBe(false);
+  });
+
+  it('rejects coordinates outside the globe', () => {
+    expect(commit({ places: [{ ...place, lat: 90.5 }] })).toBe(false);
+    expect(commit({ places: [{ ...place, lng: -180.5 }] })).toBe(false);
+    expect(commit({ movePin: [{ placeId: 1, lat: -91, lng: 0, googleFtid: null }] })).toBe(false);
+    expect(commit({ movePin: [{ placeId: 1, lat: 0, lng: 181, googleFtid: null }] })).toBe(false);
+  });
+
+  it('rejects more than 1000 places, links or pin moves', () => {
+    expect(commit({ places: Array(1000).fill(place) })).toBe(true);
+    expect(commit({ places: Array(1001).fill(place) })).toBe(false);
+    expect(commit({ link: Array(1001).fill({ placeId: 1, googleFtid: 'f' }) })).toBe(false);
+    expect(commit({ movePin: Array(1001).fill({ placeId: 1, lat: 0, lng: 0, googleFtid: null }) })).toBe(false);
+  });
 });

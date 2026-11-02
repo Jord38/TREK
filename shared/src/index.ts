@@ -53,6 +53,7 @@ export * from './day/chrono-order';
 export * from './day/stay-bookends';
 export * from './assignment/assignment.schema';
 export * from './place/place.schema';
+export * from './place/place-list-preview.schema';
 export * from './place/place-match';
 export * from './place/place-website';
 export * from './roadtrip/roadtrip.schema';

@@ -1,3 +1,4 @@
+import { matchListPlace } from './list-match';
 import type {
   DirectionsRead,
   DirectionsRedirect,
@@ -117,6 +118,11 @@ export class PlaceImportService {
   }
 
   // ── Shared lists ───────────────────────────────────────────────────────────
+
+  /** Which of a trip's places an imported list place already is: the one matching rule for list previews. */
+  classifyListPlace(...args: Parameters<typeof matchListPlace>): ReturnType<typeof matchListPlace> {
+    return matchListPlace(...args);
+  }
 
   /** A Google Maps list, or the directions link a short link turned out to be. */
   readGoogleList(url: string): Promise<ListRead<GoogleListPlace> | DirectionsRedirect | ListImportError> {

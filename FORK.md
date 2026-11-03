@@ -17,7 +17,7 @@ Runs trek.jord.cloud. Upstream: https://github.com/liketrek/TREK
     git switch jord && git merge vX.Y.Z
     # run the client and shared tests, then push; the workflow builds the image
 
-Then set the new tag in the instance's docker-compose.yml.
+WUD on the instance picks up each new `<version>-jord.<run>` tag and redeploys.
 
 ## Our changes
 
@@ -30,6 +30,10 @@ Then set the new tag in the instance's docker-compose.yml.
   upstream `APP_VERSION`; the update notice compares builds, About shows it.
 - Changelog: `server/assets/fork-changelog.json`, shown as a dialog to accounts
   created before the entry went live, and on `/whats-new`.
+- Google list import: a preview before importing a shared Google Maps list,
+  filtered by the countries you tick, with places already in the trip
+  recognised (Already / To check / New) and an option to move your pin to
+  Google's location.
 
 ## Changelog entries
 

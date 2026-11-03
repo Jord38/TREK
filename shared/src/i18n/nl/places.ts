@@ -64,7 +64,7 @@ const places: TranslationStrings = {
   'places.listPreview.groupNew': 'Nieuw · {total}',
   'places.listPreview.groupExisting': 'Al in je reis · {total}',
   'places.listPreview.checkHint': 'Blijven weg tenzij je ze aanvinkt.',
-  'places.listPreview.existingHint': 'Elke krijgt het Google-ID, zodat de volgende import hem exact herkent.',
+  'places.listPreview.existingHint': 'Jouw plek krijgt het Google-ID als die er nog geen heeft, zodat de volgende import hem exact herkent.',
   'places.listPreview.matched': 'Komt overeen met je "{name}" · {distance}',
   'places.listPreview.matchedLinked': 'Al gekoppeld aan je "{name}"',
   'places.listPreview.sameNameFar':

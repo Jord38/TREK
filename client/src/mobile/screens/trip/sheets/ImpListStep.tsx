@@ -3,6 +3,7 @@ import MToggle from '../../../components/MToggle'
 import { FIELD_CLS, FormSheetFooter } from './PlSheetChrome'
 import type { TripPlanner } from '../MTripShell'
 import { useListImport } from '../../../../components/Planner/useListImport'
+import ImpListPreview from './ImpListPreview'
 
 interface ImpListStepProps {
   planner: TripPlanner
@@ -19,9 +20,40 @@ interface ImpListStepProps {
  */
 export default function ImpListStep({ planner, onBack, onDone }: ImpListStepProps) {
   const { t, toast, tripId, tripActions, pushUndo } = planner
-  const { provider, setProvider, url, setUrl, enrich, setEnrich, loading, canEnrich, handleImport } = useListImport({
+  const {
+    provider, setProvider, url, setUrl, enrich, setEnrich, loading, canEnrich, handleImport,
+    previewData, handleCommit, backToLink,
+  } = useListImport({
     tripId, t, toast, loadTrip: tripActions.loadTrip, pushUndo, onDone,
   })
+
+  const enrichToggle = canEnrich && (
+    <div className="mt-3 flex items-start gap-3">
+      <div className="min-w-0 flex-1">
+        <div className="text-[0.78125rem] font-semibold text-m-ink">{t('places.enrichOnImport')}</div>
+        <div className="mt-[2px] font-geist text-[0.65625rem] leading-[1.4] text-m-faint">
+          {t('places.enrichOnImportHint')}
+        </div>
+      </div>
+      <MToggle checked={enrich} onChange={setEnrich} ariaLabel={t('places.enrichOnImport')} className="mt-[2px]" />
+    </div>
+  )
+
+  if (previewData) {
+    return (
+      <ImpListPreview
+        data={previewData}
+        t={t}
+        language={planner.language}
+        enrich={enrich}
+        loading={loading}
+        onBack={backToLink}
+        onCommit={handleCommit}
+      >
+        {enrichToggle}
+      </ImpListPreview>
+    )
+  }
 
   return (
     <>
@@ -54,23 +86,13 @@ export default function ImpListStep({ planner, onBack, onDone }: ImpListStepProp
           className={`${FIELD_CLS} mt-3`}
         />
 
-        {canEnrich && (
-          <div className="mt-3 flex items-start gap-3">
-            <div className="min-w-0 flex-1">
-              <div className="text-[0.78125rem] font-semibold text-m-ink">{t('places.enrichOnImport')}</div>
-              <div className="mt-[2px] font-geist text-[0.65625rem] leading-[1.4] text-m-faint">
-                {t('places.enrichOnImportHint')}
-              </div>
-            </div>
-            <MToggle checked={enrich} onChange={setEnrich} ariaLabel={t('places.enrichOnImport')} className="mt-[2px]" />
-          </div>
-        )}
+        {enrichToggle}
       </div>
 
       <FormSheetFooter
         onCancel={onBack}
         cancelLabel={t('common.cancel')}
-        onSubmit={handleImport}
+        onSubmit={() => void handleImport()}
         submitLabel={loading ? t('common.loading') : t('common.import')}
         submitDisabled={!url.trim() || loading}
       />

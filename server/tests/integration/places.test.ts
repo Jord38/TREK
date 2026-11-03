@@ -16,6 +16,7 @@ import { PlaceRatings } from '../../src/db/entities/PlaceRatings.entity';
 import { Places } from '../../src/db/entities/Places.entity';
 import { DomainError } from '../../src/nest/common/domain-error';
 import { invalidatePermissionsCache } from '../../src/nest/permissions/permissions-cache';
+import { PlaceImportService } from '../../src/nest/place-import/place-import.service';
 import { PlacesService } from '../../src/nest/places/places.service';
 import { authCookie } from '../helpers/auth';
 import { createUser, createAdmin, createTrip, createPlace, addTripMember } from '../helpers/factories';
@@ -1033,6 +1034,111 @@ describe('Custom place image upload', () => {
       .set('Cookie', authCookie(user.id))
       .attach('image', FIXTURE_PDF);
     expect(res.status).toBe(400);
+  });
+});
+
+describe('PLACE-028 — POST /import/google-list/preview', () => {
+  const previewUrl = (tripId: number) => `/api/trips/${tripId}/places/import/google-list/preview`;
+
+  it('PLACE-028a — unauthenticated returns 401', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const res = await request(app).post(previewUrl(trip.id)).send({ url: 'https://maps.app.goo.gl/x' });
+    expect(res.status).toBe(401);
+  });
+
+  it('PLACE-028b — a viewer without edit rights gets 403', async () => {
+    const { user: owner } = createUser(testDb);
+    const { user: member } = createUser(testDb);
+    const trip = createTrip(testDb, owner.id);
+    addTripMember(testDb, trip.id, member.id);
+    await setAppSetting(orm, 'perm_place_edit', 'trip_owner');
+    await invalidatePermissionsCache();
+    const res = await request(app)
+      .post(previewUrl(trip.id))
+      .set('Cookie', authCookie(member.id))
+      .send({ url: 'https://maps.app.goo.gl/x' });
+    expect(res.status).toBe(403);
+  });
+
+  it('PLACE-028c — an editor gets 200 with kind list and writes nothing', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    createPlace(testDb, trip.id, { name: 'Ramen House', lat: 35.6595, lng: 139.7005 });
+    const read = vi.spyOn(nestApp.get(PlaceImportService), 'readGoogleList').mockResolvedValue({
+      listName: 'Eats',
+      places: [{ name: 'Ramen House', lat: 35.6595, lng: 139.7005, notes: null, googleFtid: null }],
+    });
+    const res = await request(app)
+      .post(previewUrl(trip.id))
+      .set('Cookie', authCookie(user.id))
+      .send({ url: 'https://maps.app.goo.gl/x' });
+    read.mockRestore();
+    expect(res.status).toBe(200);
+    expect(res.body.kind).toBe('list');
+    expect(res.body.places[0]).toMatchObject({ key: '0', bucket: 'existing', country: 'JP' });
+    expect(await countRows(orm, Places, { trip: trip.id })).toBe(1);
+  });
+
+  it('PLACE-028d — an empty url returns 400', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const res = await request(app).post(previewUrl(trip.id)).set('Cookie', authCookie(user.id)).send({ url: '' });
+    expect(res.status).toBe(400);
+  });
+});
+
+describe('PLACE-029 — POST /import/google-list/commit', () => {
+  const commitUrl = (tripId: number) => `/api/trips/${tripId}/places/import/google-list/commit`;
+  const body = { listName: 'Eats', places: [], link: [], movePin: [] };
+
+  it('PLACE-029a — unauthenticated returns 401', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const res = await request(app).post(commitUrl(trip.id)).send(body);
+    expect(res.status).toBe(401);
+  });
+
+  it('PLACE-029b — a member without edit rights gets 403', async () => {
+    const { user: owner } = createUser(testDb);
+    const { user: member } = createUser(testDb);
+    const trip = createTrip(testDb, owner.id);
+    addTripMember(testDb, trip.id, member.id);
+    await setAppSetting(orm, 'perm_place_edit', 'trip_owner');
+    await invalidatePermissionsCache();
+    const res = await request(app).post(commitUrl(trip.id)).set('Cookie', authCookie(member.id)).send(body);
+    expect(res.status).toBe(403);
+  });
+
+  it('PLACE-029c — an editor gets 201 with the counts and the new places stored', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const bare = createPlace(testDb, trip.id, { name: 'Bare' });
+    const res = await request(app)
+      .post(commitUrl(trip.id))
+      .set('Cookie', authCookie(user.id))
+      .send({
+        ...body,
+        places: [{ name: 'Ramen House', lat: 35.6595, lng: 139.7005, notes: null, googleFtid: '0x1:0x2' }],
+        link: [{ placeId: bare.id, googleFtid: '0x3:0x4' }],
+        movePin: [{ placeId: 999999, lat: 1, lng: 1, googleFtid: null }],
+      });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({ count: 1, listName: 'Eats', linked: 1, moved: 0, stale: 1 });
+    expect(res.body.places[0].name).toBe('Ramen House');
+    expect(await countRows(orm, Places, { trip: trip.id })).toBe(2);
+  });
+
+  it('PLACE-029d — no places with one link is valid and returns count 0, linked 1', async () => {
+    const { user } = createUser(testDb);
+    const trip = createTrip(testDb, user.id);
+    const bare = createPlace(testDb, trip.id, { name: 'Bare' });
+    const res = await request(app)
+      .post(commitUrl(trip.id))
+      .set('Cookie', authCookie(user.id))
+      .send({ ...body, link: [{ placeId: bare.id, googleFtid: '0x3:0x4' }] });
+    expect(res.status).toBe(201);
+    expect(res.body).toMatchObject({ places: [], count: 0, linked: 1 });
   });
 });
 

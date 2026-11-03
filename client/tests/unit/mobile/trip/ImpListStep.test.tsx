@@ -1,5 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import type { ListPreviewPlace } from '@trek/shared'
 import { placesApi } from '../../../../src/api/client'
+import { placeListImportApi } from '../../../../src/api/placeListImport'
 import ImpListStep from '../../../../src/mobile/screens/trip/sheets/ImpListStep'
 import { useAuthStore } from '../../../../src/store/authStore'
 import type { TripPlanner } from '../../../../src/mobile/screens/trip/MTripShell'
@@ -7,7 +9,7 @@ import { buildPlanner } from '../../../helpers/mobileTrip'
 import { resetAllStores, seedStore } from '../../../helpers/store'
 import { fireEvent, render, screen, waitFor } from '../../../helpers/render'
 
-// FE-MOB-IMPL-001 to FE-MOB-IMPL-017
+// FE-MOB-IMPL-001 to FE-MOB-IMPL-025
 //
 // planner.t echoes its key, so the assertions below check keys (plus the
 // appended parameter values) rather than the English copy.
@@ -31,6 +33,9 @@ const submit = () => screen.getByRole('button', { name: 'common.import' })
 describe('ImpListStep', () => {
   beforeEach(() => {
     resetAllStores()
+    // A directions link has no list to preview, so the Google tests below that exercise the
+    // direct import get that answer; the preview tests override it.
+    vi.spyOn(placeListImportApi, 'previewGoogleList').mockResolvedValue({ kind: 'directions' })
   })
 
   afterEach(() => {
@@ -219,5 +224,125 @@ describe('ImpListStep', () => {
     const { onBack } = renderStep()
     fireEvent.click(screen.getByRole('button', { name: 'common.cancel' }))
     expect(onBack).toHaveBeenCalledTimes(1)
+  })
+
+  describe('Google list preview', () => {
+    const row = (key: string, over: Partial<ListPreviewPlace> = {}): ListPreviewPlace => ({
+      key, name: `Place ${key}`, lat: 10, lng: 20, notes: null, googleFtid: `ftid-${key}`,
+      country: 'NL', bucket: 'new', match: null, hint: null, ...over,
+    })
+    const places = [
+      row('0', { name: 'Windmill Bar' }),
+      row('1', { name: 'Canal Lounge', bucket: 'check', match: { placeId: 11, name: 'Canal Lounge Centrum', distanceM: 1200, reason: 'core-far' } }),
+      row('2', { name: 'Harbour Pier', bucket: 'existing', match: { placeId: 12, name: 'HARBOUR PIER', distanceM: 260, reason: 'name' } }),
+      row('3', { name: 'Black Forest Hut', country: 'DE' }),
+    ]
+
+    async function openPreview(over: Partial<TripPlanner> = {}) {
+      vi.mocked(placeListImportApi.previewGoogleList).mockResolvedValue({ kind: 'list', listName: 'Weekend', places })
+      const rendered = renderStep(over)
+      typeUrl('https://maps.app.goo.gl/abc')
+      fireEvent.click(submit())
+      await screen.findByRole('button', { name: /Netherlands/ })
+      return rendered
+    }
+    const pickNl = () => fireEvent.click(screen.getByRole('button', { name: /Netherlands/ }))
+
+    it('FE-MOB-IMPL-018: a Google list opens the preview with country chips instead of importing', async () => {
+      const importDirect = vi.spyOn(placesApi, 'importGoogleList')
+      const { onDone } = await openPreview()
+      expect(screen.getByRole('button', { name: /Netherlands/ })).toHaveTextContent('3')
+      expect(screen.getByRole('button', { name: /Germany/ })).toHaveTextContent('1')
+      expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
+      expect(importDirect).not.toHaveBeenCalled()
+      expect(onDone).not.toHaveBeenCalled()
+    })
+
+    it('FE-MOB-IMPL-019: picking a country shows the three groups and the import button counts the ticks', async () => {
+      await openPreview()
+      expect(screen.getByRole('button', { name: 'common.import' })).toBeDisabled()
+      pickNl()
+      expect(screen.getByText('places.listPreview.groupCheck:1')).toBeInTheDocument()
+      expect(screen.getByText('places.listPreview.groupNew:1')).toBeInTheDocument()
+      expect(screen.getByText('places.listPreview.groupExisting:1')).toBeInTheDocument()
+      expect(screen.getByRole('checkbox', { name: 'Windmill Bar' })).toBeChecked()
+      expect(screen.getByRole('checkbox', { name: 'Canal Lounge' })).not.toBeChecked()
+      expect(screen.getByRole('button', { name: 'places.listPreview.import:1' })).toBeEnabled()
+    })
+
+    it('FE-MOB-IMPL-020: Import commits exactly what is ticked, then closes the sheet through onDone', async () => {
+      vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
+        count: 2, linked: 1, moved: 0, listName: 'Weekend', places: [{ id: 71 }, { id: 72 }],
+      } as never)
+      const { planner, onDone } = await openPreview()
+      pickNl()
+      fireEvent.click(screen.getByRole('checkbox', { name: 'Canal Lounge' }))
+      fireEvent.click(screen.getByRole('button', { name: 'places.listPreview.import:2' }))
+
+      await waitFor(() => expect(onDone).toHaveBeenCalledTimes(1))
+      const request = vi.mocked(placeListImportApi.commitGoogleList).mock.calls[0][1]
+      expect(request.places.map(p => p.name)).toEqual(['Windmill Bar', 'Canal Lounge'])
+      expect(request.link).toEqual([{ placeId: 12, googleFtid: 'ftid-2' }])
+      expect(planner.tripActions.loadTrip).toHaveBeenCalledWith(1)
+      expect(planner.pushUndo).toHaveBeenCalledWith('undo.importGoogleList', expect.any(Function))
+    })
+
+    it('FE-MOB-IMPL-021: moving a pin names the place in its button, opens Already with focus on the row and commits the move', async () => {
+      vi.spyOn(placeListImportApi, 'commitGoogleList').mockResolvedValue({
+        count: 0, linked: 0, moved: 1, listName: 'Weekend', places: [],
+      } as never)
+      const { onDone } = await openPreview()
+      pickNl()
+      const usePin = screen.getByRole('button', { name: /places\.listPreview\.usePin.*Canal Lounge/ })
+      // A tap target as tall as the other phone controls.
+      expect(usePin.className).toContain('min-h-[32px]')
+      fireEvent.click(usePin)
+
+      expect(screen.getByRole('button', { name: /places\.listPreview\.groupExisting/ })).toHaveAttribute('aria-expanded', 'true')
+      expect(screen.getByText('places.listPreview.pinWillMove:Canal Lounge Centrum')).toBeInTheDocument()
+      expect(screen.getByRole('button', { name: /places\.listPreview\.keepPin.*Canal Lounge/ })).toHaveFocus()
+      fireEvent.click(screen.getByRole('button', { name: 'places.listPreview.import:1' }))
+      await waitFor(() => expect(onDone).toHaveBeenCalled())
+      expect(vi.mocked(placeListImportApi.commitGoogleList).mock.calls[0][1].movePin).toEqual([
+        { placeId: 11, lat: 10, lng: 20, googleFtid: 'ftid-1' },
+      ])
+    })
+
+    it('FE-MOB-IMPL-022: Back returns to the link with no stale preview', async () => {
+      await openPreview()
+      fireEvent.click(screen.getByRole('button', { name: 'common.back' }))
+      expect(screen.getByRole('textbox')).toBeInTheDocument()
+      expect(screen.queryByRole('button', { name: /Netherlands/ })).not.toBeInTheDocument()
+    })
+
+    it('FE-MOB-IMPL-023: a failed commit keeps the preview and its ticks', async () => {
+      vi.spyOn(placeListImportApi, 'commitGoogleList').mockRejectedValue({ response: { data: { error: 'Nope' } } })
+      const { planner, onDone } = await openPreview()
+      pickNl()
+      fireEvent.click(screen.getByRole('button', { name: 'places.listPreview.import:1' }))
+      await waitFor(() => expect(planner.toast.error).toHaveBeenCalledWith('Nope'))
+      expect(onDone).not.toHaveBeenCalled()
+      expect(screen.getByRole('checkbox', { name: 'Windmill Bar' })).toBeChecked()
+    })
+
+    it('FE-MOB-IMPL-024: a directions link still imports directly through the old endpoint', async () => {
+      vi.spyOn(placesApi, 'importGoogleList').mockResolvedValue({ count: 3, skipped: 0, listName: 'Route', places: [{ id: 5 }] })
+      const { onDone } = renderStep()
+      typeUrl('https://maps.app.goo.gl/route')
+      fireEvent.click(submit())
+      await waitFor(() => expect(onDone).toHaveBeenCalled())
+      expect(placesApi.importGoogleList).toHaveBeenCalledWith(1, 'https://maps.app.goo.gl/route', false)
+      expect(screen.queryByRole('button', { name: /Netherlands/ })).not.toBeInTheDocument()
+    })
+
+    it('FE-MOB-IMPL-025: Naver never asks for a preview', async () => {
+      vi.spyOn(placesApi, 'importNaverList').mockResolvedValue({ count: 1, skipped: 0, listName: 'S', places: [] })
+      const { onDone } = renderStep()
+      fireEvent.click(screen.getByText('places.importNaverList'))
+      typeUrl('https://naver.me/xyz')
+      fireEvent.click(submit())
+      await waitFor(() => expect(onDone).toHaveBeenCalled())
+      expect(placeListImportApi.previewGoogleList).not.toHaveBeenCalled()
+    })
   })
 })

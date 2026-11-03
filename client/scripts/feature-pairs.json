@@ -405,6 +405,12 @@
       "mobile": ["src/mobile/screens/trip/sheets/ImpListStep.tsx"]
     },
     {
+      "feature": "Google shared-list import preview",
+      "hooks": ["src/components/Planner/useListPreviewView.ts"],
+      "desktop": ["src/components/Planner/PlacesSidebarListImportModal.tsx"],
+      "mobile": ["src/mobile/screens/trip/sheets/ImpListPreview.tsx"]
+    },
+    {
       "feature": "Places column file routing between the Tours and places imports",
       "hooks": ["src/components/Planner/usePlacesColumnFileImport.ts"],
       "desktop": ["src/components/Planner/usePlacesSidebar.ts"],

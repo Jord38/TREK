@@ -305,6 +305,8 @@ export function usePlacesSidebar(props: PlacesSidebarProps) {
     listImportLoading: listImport.loading, listImportProvider: listImport.provider, setListImportProvider: listImport.setProvider,
     listImportEnrich: listImport.enrich, setListImportEnrich: listImport.setEnrich, canEnrichImport: listImport.canEnrich,
     availableListImportProviders, hasMultipleListImportProviders, handleListImport: listImport.handleImport,
+    language, closeListImport: listImport.close, listImportPreview: listImport.previewData,
+    handleListCommit: listImport.handleCommit, backToLink: listImport.backToLink,
     search, setSearch, updateSearch, filter, setFilter, pickFilter, filterCounts,
     categoryFilters, setCategoryFilters,
     ratingFilter, setRatingFilter,

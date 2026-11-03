@@ -20,6 +20,7 @@ import { ratingAggregate } from '../common/rowShape';
 import { UnsplashService } from '../unsplash/unsplash.service';
 import { PlacePhotoCacheService } from '../place-photos/place-photo-cache.service';
 import { type UpdateConflict, isUpdateConflict } from '../common/conflictResult';
+import { googleListInsertRow } from './google-list-insert-row';
 import { isUploadedPlaceImage, placeImageUrl } from './place-image';
 import { MAX_PLACE_IMAGE_SIZE, PLACE_IMAGE_EXTENSIONS } from '../common/place-image-upload';
 import { randomUUID } from 'node:crypto';
@@ -1190,40 +1191,7 @@ export class PlacesService {
           skipped++;
           continue;
         }
-        // PL38/PL40 — `insertPlace` with the legacy 7-column set (trip_id,
-        // name, lat, lng, notes, google_ftid, transport_mode='walking'
-        // literal); every omitted column takes its DB-default value.
-        // Re-selected via `findWithTagsAndRatings` INSIDE the same
-        // transaction.
-        const placeId = await this.placesRepo.insertPlace({
-          trip_id: tid,
-          name: p.name,
-          description: null,
-          lat: p.lat,
-          lng: p.lng,
-          address: null,
-          category_id: null,
-          price: null,
-          currency: null,
-          place_time: null,
-          end_time: null,
-          duration_minutes: 60,
-          notes: p.notes,
-          image_url: null,
-          google_place_id: null,
-          google_ftid: p.googleFtid,
-          osm_id: null,
-          amap_poi_id: null,
-          website: null,
-          phone: null,
-          transport_mode: 'walking',
-          route_geometry: null,
-          route_color: null,
-          stop_type: null,
-          fill_percent: null,
-          email: null,
-          opening_hours: null,
-        });
+        const placeId = await this.placesRepo.insertPlace(googleListInsertRow(tid, p));
         const place = (await this.placesRepo.findWithTagsAndRatings(placeId))!;
         created.push(place);
         trackInsertedInDedupSet(candidate, dedup);
@@ -1450,7 +1418,7 @@ export class PlacesService {
    * lookup a single pasted link has always had, which is what made a list import
    * come out thinner than the same place added one at a time (#1954).
    */
-  private async enrichImportedList(tripId: string, places: EnrichablePlace[], opts?: ListImportOptions): Promise<void> {
+  async enrichImportedList(tripId: string, places: EnrichablePlace[], opts?: ListImportOptions): Promise<void> {
     if (opts?.enrich && opts.userId) {
       await this.enrichImportedPlaces(tripId, opts.userId, places, opts.lang);
     }

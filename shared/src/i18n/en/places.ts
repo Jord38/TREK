@@ -64,7 +64,8 @@ const places: TranslationStrings = {
   'places.listPreview.groupNew': 'New · {total}',
   'places.listPreview.groupExisting': 'Already in your trip · {total}',
   'places.listPreview.checkHint': 'Left out unless you tick them.',
-  'places.listPreview.existingHint': "Your place gets Google's ID when it has none yet, so the next import recognises it exactly.",
+  'places.listPreview.existingHint':
+    "Your place gets Google's ID when it has none yet, so the next import recognises it exactly.",
   'places.listPreview.matched': 'Matches your "{name}" · {distance}',
   'places.listPreview.matchedLinked': 'Already linked to your "{name}"',
   'places.listPreview.sameNameFar': 'Same name as your "{name}", {distance} apart. Maybe your pin is off.',

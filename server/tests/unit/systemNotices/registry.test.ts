@@ -1,6 +1,6 @@
+import { evaluate } from '../../../src/systemNotices/conditions.js';
 import { RETIRED_NOTICE_IDS, SYSTEM_NOTICES } from '../../../src/systemNotices/registry.js';
 import { isNoticeVersionActive } from '../../../src/systemNotices/service.js';
-import { evaluate } from '../../../src/systemNotices/conditions.js';
 
 import fs from 'node:fs';
 import path from 'node:path';
